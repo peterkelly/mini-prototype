@@ -1,4 +1,11 @@
-The source code of this package compiles a program called mini, a type
+Mini, a type inference engine based on constraint solving.
+Copyright (C) 2006. [François Pottier](http://gallium.inria.fr/~fpottier/), [Yann Régis-Gianas](http://yann.regis-gianas.org/) and [Didier Rémy](http://gallium.inria.fr/~remy/).
+
+The original version of the code in this repository comes from [http://cristal.inria.fr/attapl/](http://cristal.inria.fr/attapl/). It is licensed under [GPLv2](LICENSE). The code exists as a sample of implementation of the algorithms described in the following book chapter:
+
+> François Pottier and Didier Rémy. [The essence of ML type inference](http://gallium.inria.fr/~fpottier/publis/emlti-final.pdf). In Benjamin C. Pierce, editor, *Advanced Topics in Types and Programming Languages*, chapter 10, pages 389--489. MIT Press, 2005.
+
+The source code of this package compiles a program called `mini`, a type
 inference engine for the Mini language.
 
 # How to compile the source code ?
@@ -7,7 +14,7 @@ Decompress the distributed package. In the newly created folder, do:
 
     # ./configure
 
-This should check if you have the necessary tools to compile [mini].
+This should check if you have the necessary tools to compile `mini`.
 Then, you just have to launch the compilation using:
 
     # make
@@ -42,18 +49,18 @@ valid Mini programs.
 
 By default, `mini` processes the following tasks:
 
-- parse-program, parse the input file as a Mini program
-- generate-constraint, generate the typing constraint of this program
-- solve-constraint, solve this constraint
-- print-env, print the types of the toplevel definitions
+- `parse-program`, parse the input file as a Mini program
+- `generate-constraint`, generate the typing constraint of this program
+- `solve-constraint`, solve this constraint
+- `print-env`, print the types of the toplevel definitions
 
 
 These tasks are optional:
 
--  print-program, pretty-print the parsed program
--  parse-constraint, parse the input file as a typing constraint not as
+-  `print-program`, pretty-print the parsed program
+-  `parse-constraint`, parse the input file as a typing constraint not as
    a Mini program
--  print-constraint, print the typing constraint
+-  `print-constraint`, print the typing constraint
 
 The options of `mini` enable the use of these optional tasks:
 
