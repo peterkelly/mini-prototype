@@ -16,3 +16,9 @@
 /doc/
 *.cmi
 *.cmo
+*.bad-output
+bad-counter
+bad-ok-counter
+*.good-output
+good-counter
+good-ok-counter
