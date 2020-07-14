@@ -31,32 +31,32 @@ open Positions
 (** [UnboundTypeIdentifier] is raised when an unbound type identifier
     is found. *)
 exception UnboundTypeIdentifier of position * tname
-    
-(** [InvalidTypeVariableIdentifier] is raised when a type variable is 
+
+(** [InvalidTypeVariableIdentifier] is raised when a type variable is
     overwriting a type constructor. *)
 exception InvalidTypeVariableIdentifier of position * tname
-   
+
 (** [UnboundDataConstructor] is raised when a constructor identifier is
   used although it has not been defined. *)
-exception UnboundDataConstructor of position * dname 
-    
-(** [InvalidDataConstructorDefinition] is raised when the declared 
+exception UnboundDataConstructor of position * dname
+
+(** [InvalidDataConstructorDefinition] is raised when the declared
     type scheme of a data constructor is not regular. *)
 exception InvalidDataConstructorDefinition of position * dname
 
 (** [UnboundTypeVariable] is raised when a variable identifier is
     used although it has not been defined. *)
-exception UnboundTypeVariable of position * tname 
-    
-(** [MultipleLabels] is raised when the user has built a record 
+exception UnboundTypeVariable of position * tname
+
+(** [MultipleLabels] is raised when the user has built a record
     with two fields with the same name. *)
 exception MultipleLabels of position * lname
-    
-(** [NonLinearPattern] is raised when at least two occurrences of a variable 
+
+(** [NonLinearPattern] is raised when at least two occurrences of a variable
     appear in a pattern. *)
 exception NonLinearPattern of position * name
 
-(** [InvalidDisjunctionPattern] is raised when the subpatterns of a 
+(** [InvalidDisjunctionPattern] is raised when the subpatterns of a
     disjunction pattern do not bind the same variables. *)
 exception InvalidDisjunctionPattern of position
 
@@ -64,14 +64,14 @@ exception InvalidDisjunctionPattern of position
     is not respected in a pattern. *)
 exception NotEnoughPatternArgts of position
 
-(** [InvalidNumberOfTypeVariable] is raised when the introduction of 
+(** [InvalidNumberOfTypeVariable] is raised when the introduction of
     existential type variables in a pattern is not well-formed. *)
 exception InvalidNumberOfTypeVariable of position
-    
-(** [RecursiveDefMustBeVariable] is raised in case of bad formed 
+
+(** [RecursiveDefMustBeVariable] is raised in case of bad formed
     recursive value definition. *)
-exception RecursiveDefMustBeVariable of position 
-    
+exception RecursiveDefMustBeVariable of position
+
 (** [CannotGeneralize] when the type of an expression cannot be
     generalized contrary to what is specified by the programmers
     using type annotations. *)
@@ -80,15 +80,15 @@ exception CannotGeneralize of position * crterm
 (** [NonDistinctVariables] is raised when two rigid type variables have
     been unified. *)
 exception NonDistinctVariables of position * (variable list)
-    
-(** [CannotUnifyHeadWithTerm] is raised when we encounter first order 
+
+(** [CannotUnifyHeadWithTerm] is raised when we encounter first order
     unification error. *)
 exception CannotUnifyHeadWithTerm of position * tname * crterm
-    
+
 (** This exception is raised when a match is not complete. *)
 exception NonExhaustiveMatch of position * pattern
 
-(** [UnboundConstructor] is raised when a type constructor is unbound. *)    
+(** [UnboundConstructor] is raised when a type constructor is unbound. *)
 exception UnboundTypeConstructor of position * tname
 
 (** [KindError] is raised when the kind of types are not correct. *)
@@ -97,4 +97,3 @@ exception KindError of position
 (** [PartialDataConstructorApplication] is raised when a data constructor's
     arity is not respected by the programmer. *)
 exception PartialDataConstructorApplication of position * int * int
-

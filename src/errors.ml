@@ -33,41 +33,41 @@ open MiniAst
 
 let error_channel = ref stderr
 
-let set_error_channel c = 
+let set_error_channel c =
   error_channel := c
 
 let msg m p =
   fprintf !error_channel m (Positions.string_of_pos p)
-    
+
 let handle ?dont_exit e = (
   try
     e (); if dont_exit = None then exit 0
-  with 
+  with
 
     | MiniLexer.Error (msg, c1, c2) ->
 	fprintf !error_channel "%s near characters %d-%d.\n" msg c1 c2
 
-    | NonExhaustiveMatch (pos, pat) -> 
+    | NonExhaustiveMatch (pos, pat) ->
 	msg ("%s:\n This match is not exhaustive, the following pattern " ^^
 	"is not matched:\n")
 	  pos;
 	assert false
 
     | CannotGeneralize (p, v) ->
-	msg "%s:\n Cannot generalize `%s'.\n" p 
+	msg "%s:\n Cannot generalize `%s'.\n" p
 	  (Print.print_variable false v)
 
     | NonDistinctVariables (p, vs) ->
-	let lvs = Misc.print_separated_list ";" 
+	let lvs = Misc.print_separated_list ";"
 	  (Print.print_variable false) vs in
 	  msg ("%s:\n The following variables have been unified: [%s].\n")
-	    p lvs 
-	    
-    | KindError p ->
-	msg "%s:\n  Kind error.\n" p 
+	    p lvs
 
-    | TypingError p -> 
-	msg "%s:\n  Typing error.\n" p 
+    | KindError p ->
+	msg "%s:\n  Kind error.\n" p
+
+    | TypingError p ->
+	msg "%s:\n  Typing error.\n" p
 
     | UnboundTypeConstructor (p, TName t) ->
 	msg "%s:\n Unbound type constructor `%s'.\n" p t
@@ -76,9 +76,9 @@ let handle ?dont_exit e = (
 	msg "%s:\n Unbound identifier `%s'.\n" p k
 
     | CannotUnify (p, t1, t2) ->
-	msg "%s:\n `%s' cannot be unified with `%s'.\n" p 
-	  (Print.print_term false t1) 
-	  (Print.print_term false t2);  
+	msg "%s:\n `%s' cannot be unified with `%s'.\n" p
+	  (Print.print_term false t1)
+	  (Print.print_term false t2);
 
     | NonLinearPattern (p, SName x) ->
 	msg "%s:\n The variable '%s' occurs several times.\n" p x
@@ -87,13 +87,13 @@ let handle ?dont_exit e = (
 	msg "%s:\n Not enough pattern arguments.\n" p
 
     | InvalidDisjunctionPattern p ->
-	msg 
+	msg
 	  "%s:\n A disjunction pattern must bind exactly the same variables.\n"
 	  p
 
     | PartialDataConstructorApplication (p, d, u) ->
 	msg
-	  "%s:\n This data constructor needs %d arguments not %d.\n" 
+	  "%s:\n This data constructor needs %d arguments not %d.\n"
 	  p d u
 
     | InvalidNumberOfTypeVariable p ->
@@ -102,7 +102,7 @@ let handle ?dont_exit e = (
     | MultipleLabels (p, LName n) ->
 	msg "%s:\n Multiple definition of label %s.\n" p n
 
-    | InvalidTypeVariableIdentifier (p, TName v) -> 
+    | InvalidTypeVariableIdentifier (p, TName v) ->
 	msg "%s:\n `%s' type constructor is used as a type variable.\n" p v
 
     | RecursiveDefMustBeVariable p ->
@@ -116,11 +116,8 @@ let handle ?dont_exit e = (
     | ParsingExceptions.Unclosed (b, e, p1, p2) ->
 	msg "%s:\n Unclosed %s %s (may begin at %s).\n"
 	  p2 b e (Positions.string_of_pos p1)
-	
+
     | ParsingExceptions.Other l ->
 	msg "%s:\n Parse error.\n"  (Positions.cpos l));
 
   if dont_exit = None then exit 1
-
-
-

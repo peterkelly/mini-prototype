@@ -68,8 +68,8 @@ module StringMap = struct
   let strict_union m1 m2 =
     fold strict_add m1 m2
 
-  let domain m = 
-    fold (fun k _ acu -> StringSet.add k acu) m StringSet.empty 
+  let domain m =
+    fold (fun k _ acu -> StringSet.add k acu) m StringSet.empty
 
 end
 
@@ -80,7 +80,7 @@ let debug =
 (** Prints a list of elements, with one occurrence of the separator
     between every two consecutive elements. *)
 let print_separated_list separator print_elem xs =
-  
+
   let rec loop x = function
     | [] ->
 	print_elem x
@@ -97,7 +97,7 @@ let print_separated_list separator print_elem xs =
       loop x xs
 
 
-let make_indexes default  =   
+let make_indexes default  =
   (** A hash table maps all known identifiers to integer values. It
       provides one direction of the global mapping. *)
   let table =
@@ -106,7 +106,7 @@ let make_indexes default  =
   (** An infinite array maps all known integer values to identifiers. It
       provides the other direction of the global mapping. *)
   array =
-    InfiniteArray.make default (* Dummy data. *) 
+    InfiniteArray.make default (* Dummy data. *)
     (** A global counter contains the next available integer label. *)
   and counter =
     ref 0
@@ -134,8 +134,8 @@ let make_indexes default  =
   and export i =
     assert (i < !counter);
     InfiniteArray.get array i
-      
-  and find s = 
+
+  and find s =
     Hashtbl.find table s
   in
     (import, export, find)
@@ -151,7 +151,7 @@ let curry f = fun (x, y) -> f x y
 
 let switch_args f = fun x y -> f y x
 
-let safe_find x = 
+let safe_find x =
   try
     x
   with Not_found -> assert false
@@ -164,7 +164,7 @@ let twice f x y = (f x, f y)
 
 exception Inconsistency
 
-let pmapq conv v = 
+let pmapq conv v =
   try
     List.assq v conv
   with Not_found -> v
@@ -173,26 +173,26 @@ let default d = function
     Some x -> x
   | None -> d
 
-let is_now v v' = 
+let is_now v v' =
   match v with
   | None -> v'
   | Some x -> if (v <> v') then raise Inconsistency else v
 
-let rec itern n f = 
+let rec itern n f =
   if n = 0 then [] else (f ()) :: (itern (n-1) f)
-  
-let updatef f x v = List.map (fun (y, v') -> if x = y then (x, f v) else (y, v')) 
+
+let updatef f x v = List.map (fun (y, v') -> if x = y then (x, f v) else (y, v'))
 
 let update x v = updatef (fun x -> x) x v
 
 
-let set_of_list = 
-  List.fold_left (fun a c -> StringSet.add c a) StringSet.empty 
+let set_of_list =
+  List.fold_left (fun a c -> StringSet.add c a) StringSet.empty
 
-let intersect s1 s2 = 
+let intersect s1 s2 =
   StringSet.inter s1 s2 <> StringSet.empty
 
-let map_union m1 m2 = 
+let map_union m1 m2 =
   StringMap.fold StringMap.add m1 m2
 
 exception InvalidOptionUse
@@ -206,12 +206,12 @@ let unSomef f = fun x -> unSome (f x)
 let split3 l = List.fold_left (fun (l1,l2,l3) (a, b, c) -> a::l1, b::l2, c::l3)
 	       ([], [], []) l
 
-let split4 l = List.fold_left 
+let split4 l = List.fold_left
 		 (fun (l1,l2,l3,l4) (a, b, c, d) -> a::l1, b::l2, c::l3, d::l4)
 	       ([], [], [], []) l
 
-let split5 l = 
-  List.fold_left 
+let split5 l =
+  List.fold_left
     (fun (l1,l2,l3,l4,l5) (a, b, c, d, e) -> a::l1, b::l2, c::l3, d::l4, e::l5)
 	       ([], [], [], [], []) l
 
@@ -220,13 +220,13 @@ let rec transpose l =
     | [] -> []
     | [] :: _ -> []
     | [ a ] :: _ -> [ List.map List.hd l ]
-    | _ -> let hs, ts = 
+    | _ -> let hs, ts =
 	List.split (List.map (function l -> List.hd l, List.tl l) l)
       in hs :: transpose ts
 
-let list_unionq l1 = 
+let list_unionq l1 =
   List.fold_left (fun acu x -> if not (List.memq x acu) then x::acu else acu)
-    l1 
+    l1
 
 let list_removeq x = function
   | [] -> []
@@ -235,18 +235,18 @@ let list_removeq x = function
 
 let const f = fun v -> f
 
-let array_associ x a = 
+let array_associ x a =
   let len = Array.length a in
-  let rec chop i = 
-    if i < len then 
+  let rec chop i =
+    if i < len then
       if fst a.(i) = x then i
       else chop (i + 1)
     else
-      raise Not_found 
+      raise Not_found
   in
     chop 0
 
-let array_assoc x a = 
+let array_assoc x a =
   snd a.(array_associ x a)
 
 let assoc_proj1 l =
@@ -270,14 +270,14 @@ let proj3_5 (_,_,z,_,_) = z
 let proj4_5 (_,_,_,t,_) = t
 let proj5_5 (_,_,_,_,v) = v
 
-let split3 l = 
+let split3 l =
   List.fold_left (fun (xs, ys, zs) (x, y, z) -> (x :: xs, y :: ys, z :: zs))
     ([],[],[]) l
 
 let isNonef f = fun x -> f x = None
 
 (* FIXME: not tail rec. *)
-let rec gcombine l r = 
+let rec gcombine l r =
   match l, r with
     | [], r -> [], [], r
     | a :: q, [] -> [], l, []
@@ -285,7 +285,7 @@ let rec gcombine l r =
 	(a, b) :: g, rl, rr
 
 (* FIXME: optimize. *)
-let list_map_array f l = 
+let list_map_array f l =
   let t = Array.of_list l in
    Array.map f t
 
@@ -295,7 +295,7 @@ let list_iteri f l =
 let list_mapi f l =
   List.rev (snd (List.fold_left (fun (i,q) x -> (i+1, f i x ::q)) (0,[]) l))
 
-exception NonDisjointCase 
+exception NonDisjointCase
 exception Failure of exn list
 
 type ('a, 'b) either = Left of 'a | Right of 'b
@@ -319,46 +319,45 @@ let just_try e =
 
 let ( ^^ ) = ( ^ )
 
-let opt_apply f x = 
+let opt_apply f x =
   match f with
     | Some f -> Some (f x)
     | None -> None
 
-let list_foralli f = 
+let list_foralli f =
   let rec test i = function
       [] -> true
     | a :: q -> if f i a then test (i+1) q else false
   in
-    test 0 
+    test 0
 
-let list_existsi f = 
+let list_existsi f =
   let rec test i = function
       [] -> false
-    | a :: q -> if f i a then true else test (i+1) q 
+    | a :: q -> if f i a then true else test (i+1) q
   in
-    test 0 
+    test 0
 
-let list_mapi2 f = 
-  let rec loop i l1 l2 = 
+let list_mapi2 f =
+  let rec loop i l1 l2 =
     match (l1, l2) with
 	[], [] -> []
       | r :: rs, q :: qs -> f i r q :: (loop (i+1) rs qs)
       | _ -> failwith "Invalid arguments for mapi2"
   in
-    loop 0 
+    loop 0
 
-let are_distinct l = 
+let are_distinct l =
   let rec fold acu = function
       [] -> None
     | x :: q -> if List.mem x acu then Some x else fold (x::acu) q
   in fold [] l
 
-let all_equal l = 
+let all_equal l =
   let rec fold acu = function
       [] -> true, acu
-    | x :: q -> (match acu with 
-		     None -> fold (Some x) q 
+    | x :: q -> (match acu with
+		     None -> fold (Some x) q
 		   | Some y -> if x = y then fold acu q else (false, None))
   in
     fold None l
-

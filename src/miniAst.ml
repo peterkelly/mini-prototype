@@ -25,7 +25,7 @@
 
 open Positions
 
-type program = 
+type program =
     binding list
 
 and binding =
@@ -34,20 +34,20 @@ and binding =
   | TypeDec of position * type_declaration list
 
 and expression =
-    
+
   (** Core ML. *)
-  | EVar of position * name 
+  | EVar of position * name
   | ELambda of position * pattern * expression
   | EApp of position * expression * expression
   | EBinding of position * binding * expression
   | EPrimApp of position * primitive * expression list
   | EForall of position * tname list * expression
   | EExists of position * tname list * expression
-  
+
   (** Type annotations. *)
   | ETypeConstraint of position * expression * typ
-  
-  (** Algebraic datatypes. *) 
+
+  (** Algebraic datatypes. *)
   | EDCon of position * dname * expression list
   | EMatch of position * expression * (clause list)
 
@@ -63,7 +63,7 @@ and expression =
 (** Program identifiers. *)
 and name = Constraint.sname =
   | SName of string
-      
+
 (** Type variable names. *)
 and tname =
     MultiEquation.tname
@@ -75,7 +75,7 @@ and dname =
 (** Record labels. *)
 and lname =
     CoreAlgebra.lname
-  
+
 (** Constant. *)
 and primitive =
   | PIntegerConstant of int	(** Integer constant. *)
@@ -102,7 +102,7 @@ and value_definition =
 
 and pattern =
   | PVar of position * name
-  | PWildcard of position 
+  | PWildcard of position
   | PAlias of position * name * pattern
   | PTypeConstraint of position * pattern * typ
   | PPrimitive of position * primitive
@@ -110,16 +110,14 @@ and pattern =
   | PAnd of position * pattern list
   | POr of position * pattern list
 
-and kind = 
+and kind =
   | KStar
   | KTimes of kind * kind
   | KArrow of kind * kind
-  | KEmptyRow 
+  | KEmptyRow
 
 and typ =
   | TypVar of position * tname
-  | TypApp of position * typ * typ list 
+  | TypApp of position * typ * typ list
   | TypRowCons of position * (lname * typ) list * typ
   | TypRowUniform of position * typ
-
-

@@ -22,13 +22,13 @@
 (* $Id: constraintPrettyPrinter.mli 421 2006-12-22 09:27:42Z regisgia $ *)
 
 (** The constraint over equality between terms. *)
-type formula = 
+type formula =
     (MultiEquation.crterm, MultiEquation.variable) Constraint.type_constraint
 
-(** Pretty printer for [formula]. 
-    The connectors' representations can be redefined 
-    (labels [forall, exists, andsym]). 
-    A [user_name_from_int] function can be given to generate fresh strings 
+(** Pretty printer for [formula].
+    The connectors' representations can be redefined
+    (labels [forall, exists, andsym]).
+    A [user_name_from_int] function can be given to generate fresh strings
     from integers.
     See {!PrettyPrinter.mode}. *)
 val printf_constraint :

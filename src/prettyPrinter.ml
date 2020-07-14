@@ -22,13 +22,13 @@
 (* $Id: prettyPrinter.ml 421 2006-12-22 09:27:42Z regisgia $ *)
 
 (** This module implements some common stuff for pretty printer. *)
-open Format 
+open Format
 
-type output = 
+type output =
   | Channel of Pervasives.out_channel
-  | Buffer of Buffer.t 
+  | Buffer of Buffer.t
 
-type formatter_output = 
+type formatter_output =
 	{
 	  out: string -> int -> int -> unit;
 	  flush: unit -> unit;
@@ -40,18 +40,17 @@ type formatter_output =
 	  margin: int;
 	}
 
-type mode = 
+type mode =
       Latex of output
     | Txt of output
     | Formatter of formatter_output
 
-let output_string output = 
+let output_string output =
   match output with
     | Channel cout -> Pervasives.output_string cout
     | Buffer b -> Buffer.add_string b
 
-let flush output = 
+let flush output =
   match output with
     | Channel cout -> Pervasives.flush cout
     | Buffer b -> ()
-

@@ -42,7 +42,7 @@ expected: clean-expected $(GOOD_EXPECTED)
 %.expected: %.good-input
 	@ $(MINI) $< &> $@ || echo "$@ has failed."; touch $@
 
-%.bad-output:%.bad-input						
+%.bad-output:%.bad-input
 	@ echo TEST >> bad-counter;					 \
 	($(MINI) $< &> $@ && echo "[ KO ]   --> " $<			 \
 	" should have failed !")					 \
@@ -57,7 +57,7 @@ expected: clean-expected $(GOOD_EXPECTED)
 	echo "--------------------------------------------------------"; \
 	fi
 
-%.good-output:%.good-input						
+%.good-output:%.good-input
 	@ (echo TEST >> good-counter); $(MINI) $< &> $@;                 \
 	(diff -u $@ $*.expected &> /dev/null				 \
 	  && (echo "[ OK ]  " $<; (echo "OK $@" >> good-ok-counter)))	 \
@@ -85,14 +85,14 @@ bad: clean-bad-counters $(BAD_OUTPUTS)
 	@ echo "BAD:  "`wc -l bad-ok-counter | cut -f1 -d' '` \
 	/ `wc -l bad-counter | cut -f1 -d' '`
 
-good: clean-good-counters $(GOOD_OUTPUTS) 
+good: clean-good-counters $(GOOD_OUTPUTS)
 	@ touch good-ok-counter
 	@ touch good-counter
 	@ echo "GOOD: "`wc -l good-ok-counter | cut -f1 -d' '` \
-	/ `wc -l good-counter | cut -f1 -d' '` 
+	/ `wc -l good-counter | cut -f1 -d' '`
 
 announce:
-	@ echo "========================================================"; 
+	@ echo "========================================================";
 	@ echo "In "`pwd | sed 's/.*\/\(.*\/.*\)/\1/' `
 
 check: announce clean-silent good bad

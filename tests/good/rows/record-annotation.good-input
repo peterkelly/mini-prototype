@@ -1,4 +1,4 @@
 let f (x : {l : pre int; \abs}) =  x
 
-let g = f { l =  1 } 
+let g = f { l =  1 }
 

@@ -136,7 +136,7 @@ val proj5_5 : ('a * 'b * 'c * 'd * 'e) -> 'e
 
 val split3 : ('a * 'b * 'c) list -> 'a list * 'b list * 'c list
 val split4 : ('a * 'b * 'c * 'd) list -> 'a list * 'b list * 'c list * 'd list
-val split5 : 
+val split5 :
 ('a * 'b * 'c * 'd * 'e) list -> 'a list * 'b list * 'c list * 'd list * 'e list
 
 val transpose : ('a list) list -> ('a list) list
@@ -149,11 +149,11 @@ val list_iteri : (int -> 'a -> unit) -> 'a list -> unit
 
 val list_mapi : (int -> 'a -> 'b) -> 'a list -> 'b list
 
-exception NonDisjointCase 
+exception NonDisjointCase
 exception Failure of exn list
 type ('a, 'b) either = Left of 'a | Right of 'b
 
-val one_of : (unit -> 'a) -> (unit -> 'b) -> (('a * exn), ('b * exn)) either 
+val one_of : (unit -> 'a) -> (unit -> 'b) -> (('a * exn), ('b * exn)) either
 
 val reraise : (unit -> 'a) -> exn -> exn -> 'a
 

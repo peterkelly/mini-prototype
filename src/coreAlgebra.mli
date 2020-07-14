@@ -26,10 +26,10 @@
     The type core algebra contains all the first order terms built using
     the following four symbols:
 
-    [RowCons] is the row constructor which appends a label to a row. 
-    [RowUniform] denotes the row which maps every label to a particular term. 
-    [App] is the application of a type to another type. 
-    [Var] is a type variable. 
+    [RowCons] is the row constructor which appends a label to a row.
+    [RowUniform] denotes the row which maps every label to a particular term.
+    [App] is the application of a type to another type.
+    [Var] is a type variable.
 
     This definition is later augmented to
     be usable in a real programming language in {!MiniAlgebra}. *)
@@ -57,12 +57,12 @@ end
 
 (** {3 Type as tree} *)
 
-(** Terms whose parameters are of type ['a]. This data structure 
+(** Terms whose parameters are of type ['a]. This data structure
     represents a tree whose depth is exactly equal to 1. *)
 type 'a term =
   | RowCons of RowLabel.t * 'a * 'a
   | RowUniform of 'a
-  | App of 'a * 'a 
+  | App of 'a * 'a
   | Var of 'a
 
 (** Terms whose parameters are either leaves of type ['a], or terms.
@@ -88,7 +88,7 @@ val fold: ('a -> 'b -> 'b) -> 'a term -> 'b -> 'b
 
 (** [fold2 f term term' accu] folds [f] over [term]'s parameters, using
     [accu] as initial value. *)
-val fold2: ('a -> 'b -> 'c -> 'c) -> 'a term -> 'b term -> 'c -> 'c 
+val fold2: ('a -> 'b -> 'c -> 'c) -> 'a term -> 'b term -> 'c -> 'c
 
 (** {3 Type manipulation} *)
 
@@ -105,4 +105,3 @@ val rowcons : lname -> 'a arterm -> 'a arterm -> 'a arterm
 
 (** [n_rowcons l ts r] returns the row type [(l0: t0; ...; ln: tn; r)]. *)
 val n_rowcons : (lname * 'a arterm) list -> 'a arterm -> 'a arterm
-

@@ -50,7 +50,7 @@ sig
 
 end
 
-module Make (Set : SetType) = 
+module Make (Set : SetType) =
 struct
 
   open UnionFind
@@ -256,4 +256,3 @@ struct
   let print v = print_descriptor (UnionFind.find v)
 
 end
-

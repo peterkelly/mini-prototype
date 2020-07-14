@@ -29,12 +29,12 @@ open Positions
 open AstPositions
 open MiniAst
 
-let unclosed b e l1 l2 = 
+let unclosed b e l1 l2 =
   let l1 = lex_join (Parsing.rhs_start_pos l1) (Parsing.rhs_end_pos l1)
   and l2 = lex_join (Parsing.rhs_start_pos l2) (Parsing.rhs_end_pos l2)
   in
     raise (ParsingExceptions.Unclosed (b, e, l1, l2))
-			    
+
 
 let match_unit pos =
   PData (pos, DName "_Unit", [])
@@ -47,45 +47,45 @@ let infix (x,y) e1 e2 =
 
 let seq e1 e2 =
   let pos = joine e1 e2 in
-    EBinding (pos, BindValue (pos, [ pos, [], 
+    EBinding (pos, BindValue (pos, [ pos, [],
 				     match_unit (position e1), e1 ]), e2)
-     
-let fold_pair f ts = 
-  match ts with 
+
+let fold_pair f ts =
+  match ts with
     | a :: b :: q -> List.fold_left f (f a b) q
     | _ -> assert false
 
-let tuple2 pos t1 t2 = 
+let tuple2 pos t1 t2 =
   EDCon (pos, DName "_Tuple", [ t1; t2 ])
 
-let tuple pos = 
-  fold_pair (tuple2 pos) 
+let tuple pos =
+  fold_pair (tuple2 pos)
 
 let arrow_type pos t1 t2 =
   TypApp (pos, TypVar (pos, TName "->"), [ t1; t2 ])
 
-let tuple_type2 pos t1 t2 = 
+let tuple_type2 pos t1 t2 =
   TypApp (pos, TypVar (pos, TName "*"), [ t1; t2 ])
 
-let tuple_type pos = 
-  fold_pair (tuple_type2 pos)  
+let tuple_type pos =
+  fold_pair (tuple_type2 pos)
 
-let ref_type pos t = 
+let ref_type pos t =
   TypApp (pos, TypVar (pos, TName "ref"), [ t ])
 
-let tuple_pat2 pos t1 t2 = 
+let tuple_pat2 pos t1 t2 =
   PData (pos, DName "_Tuple", [ t1 ; t2 ])
 
-let tuple_pat pos = 
-  fold_pair (tuple_pat2 pos) 
+let tuple_pat pos =
+  fold_pair (tuple_pat2 pos)
 
-let assign pos e1 e2 = 
+let assign pos e1 e2 =
   EApp (pos, EApp (pos, EVar (pos, SName "_assign"), e1), e2)
 
-let deref pos e = 
+let deref pos e =
   EApp (pos, EVar (pos, SName "_deref"), e)
 
-let mkref pos e = 
+let mkref pos e =
   EApp (pos, EVar (pos, SName "_ref"), e)
 
 %}
@@ -176,7 +176,7 @@ quantifier:
 							p, TName s }
 ;
 
-attributes: 
+attributes:
   typ						    { [], $1 }
 | attribute SEMI attributes			    { $1 :: (fst $3), snd $3 }
 ;
@@ -190,13 +190,13 @@ typ:
 ;
 
 type2:
-  type10 ARROW type2                                 
+  type10 ARROW type2
   { arrow_type (tjoin $1 $3) $1 $3  }
 | type10                                             { $1 }
 ;
 
 type10:
- star_types				            
+ star_types
 { match $1 with
     | [] -> assert false
     | [ a ] -> a
@@ -215,27 +215,27 @@ type1:
 ;
 
 type0:
- type00s				    
-  { 
+ type00s
+  {
     match $1 with
 	[] -> assert false
       | [ t ] -> t
-      | t :: q -> 
+      | t :: q ->
 	  TypApp (join (tposition t)
 		    (tlposition q),
 		    t,
-		    q) 
+		    q)
   }
 | REF type0 { ref_type $1 $2 }
 ;
 
 type00:
-  LID                                               
+  LID
   { TypVar (fst $1, TName (snd $1)) }
-| LBRACE attributes RBRACE			    
+| LBRACE attributes RBRACE
       { let pos = join $1 $3 in
-	TypApp (pos, TypVar (pos, TName "pi"), 
-		[ TypRowCons (join $1 $3, fst $2, 
+	TypApp (pos, TypVar (pos, TName "pi"),
+		[ TypRowCons (join $1 $3, fst $2,
 			      snd $2) ])
       }
 | LPAREN typ RPAREN                                 { $2 }
@@ -260,30 +260,30 @@ expression:
 ;
 
 expression400:
-  BACKSLASH pattern DOT expression400               
-{ 
-  ELambda (join $1 (position $4), $2, $4) 
+  BACKSLASH pattern DOT expression400
+{
+  ELambda (join $1 (position $4), $2, $4)
 }
-| FORALL quantifiers DOT expression400 
+| FORALL quantifiers DOT expression400
 {
   EForall (join $1 (position $4), snd (List.split $2), $4)
 }
-| EXISTS quantifiers DOT expression400 
+| EXISTS quantifiers DOT expression400
 {
   EExists (join $1 (position $4), snd (List.split $2), $4)
 }
-| MATCH expression WITH clauses END		    
-{ 
+| MATCH expression WITH clauses END
+{
   EMatch (join $1 $5, $2, List.rev $4)
-} 
-| binding IN expression400                          
-{ 
-  EBinding (join (bposition $1) (position $3), $1, $3) 
 }
-/* | FORALL quantifiers DOT expression400           { EForall ($2, $4) } 
-    This production has been suppressed to avoid redundancy 
+| binding IN expression400
+{
+  EBinding (join (bposition $1) (position $3), $1, $3)
+}
+/* | FORALL quantifiers DOT expression400           { EForall ($2, $4) }
+    This production has been suppressed to avoid redundancy
 with the [let forall] construct.
-    This decision simplifies the code that deals with polymorphic recursion. 
+    This decision simplifies the code that deals with polymorphic recursion.
 */
 | expression300 SEMI expression400                  { seq $1 $3 }
 | expression300                                     { $1 }
@@ -295,16 +295,16 @@ clauses:
 ;
 
 clause:
-  pattern DARROW expression			    { (join 
+  pattern DARROW expression			    { (join
 							 (pposition $1)
 							 (position $3),
 						       $1, $3) }
 ;
 
 expression300:
-  expression50 DOT LID LEFTARROW expression100      
-  { 
-    ERecordUpdate (joine $1 $5, $1, LName (snd $3), $5) 
+  expression50 DOT LID LEFTARROW expression100
+  {
+    ERecordUpdate (joine $1 $5, $1, LName (snd $3), $5)
   }
 | expression200                                     { $1 }
 ;
@@ -320,18 +320,18 @@ expression200:
 ;
 
 expression100:
-  expression100 expression0                         
-  { 
+  expression100 expression0
+  {
     match $1 with
 	EDCon (p, k, args) -> EDCon (p, k, args @ [ $2 ])
-      | _ -> EApp (joine $1 $2, $1, $2) 
+      | _ -> EApp (joine $1 $2, $1, $2)
   }
 | expression50                                      { $1 }
 ;
 
 expression50:
-  expression50 DOT LID                               
-  { 
+  expression50 DOT LID
+  {
     ERecordAccess (join (position $1) (fst $3), $1, LName (snd $3))
   }
 | expression10					     { $1 }
@@ -340,48 +340,48 @@ expression50:
 expression10:
   expression0					     { $1 }
 | expression0 ASSIGN expression0		     { assign (joine $1 $3)
-							 $1 $3 
+							 $1 $3
 						     }
-| BANG expression0				     { deref 
-							 (join $1 
+| BANG expression0				     { deref
+							 (join $1
 							    (position $2))
-							 $2 
+							 $2
 						     }
-| REF expression0				     { mkref 
-							 (join $1 
+| REF expression0				     { mkref
+							 (join $1
 							    (position $2))
-							 $2 
+							 $2
 						     }
 ;
 
 expression0:
-  LID                                                
-{ 
-  EVar (fst $1, SName (snd $1)) 
+  LID
+{
+  EVar (fst $1, SName (snd $1))
 }
-| UID						     
-{ 
-  EDCon (fst $1, DName (snd $1), []) 
+| UID
+{
+  EDCon (fst $1, DName (snd $1), [])
 }
-| LONGID                                             
-{ 
+| LONGID
+{
   EVar (fst $1, SName (snd $1))
 }
 | ASSERT_FALSE				             { EAssertFalse ($1) }
-| INTEGER                                            { EPrimApp 
-							 (fst $1, 
-							  PIntegerConstant 
-							    (snd $1), 
-							  []) } 
-| CHAR                                               { EPrimApp 
-							 (fst $1, 
-							  PCharConstant 
-							    (snd $1), 
-							  []) } 
+| INTEGER                                            { EPrimApp
+							 (fst $1,
+							  PIntegerConstant
+							    (snd $1),
+							  []) }
+| CHAR                                               { EPrimApp
+							 (fst $1,
+							  PCharConstant
+							    (snd $1),
+							  []) }
 | LBRACE record_bindings RBRACE                      { ERecordExtend (
 							 join $1 $3,
 							 List.rev $2,
-							 ERecordEmpty undefined_position) 
+							 ERecordEmpty undefined_position)
 						     }
 | LPAREN RPAREN                                      { EPrimApp (
 							 join $1 $2,
@@ -394,8 +394,8 @@ expression0:
 	unclosed "(" ")" 1 3
       }
 
-| LPAREN expression COLON typ RPAREN                 
-    { ETypeConstraint (join $1 $5, $2, $4) 
+| LPAREN expression COLON typ RPAREN
+    { ETypeConstraint (join $1 $5, $2, $4)
 }
 | LPAREN expression COMMA expressions RPAREN         { tuple (join $1 $5) ($2 :: $4) }
 ;
@@ -421,15 +421,15 @@ bindings:
 ;
 
 binding:
-  LET value_definitions                              
+  LET value_definitions
   {
-    BindValue (join $1 (vlposition $2), $2) 
+    BindValue (join $1 (vlposition $2), $2)
   }
-| LET REC value_definitions                          { BindRecValue 
+| LET REC value_definitions                          { BindRecValue
 							 (join $1 (vlposition $3),
 							  $3) }
-| TYPE type_definitions				     { TypeDec (join $1 (tdlposition $2), 
-								$2) } 
+| TYPE type_definitions				     { TypeDec (join $1 (tdlposition $2),
+								$2) }
 ;
 
 
@@ -438,19 +438,19 @@ type_definition					     { [ $1 ] }
 | type_definitions AND type_definition		     { $3 :: $1 }
 ;
 
-type_definition:					
-  LID COLON kind EQUAL forall algebraic_datatype_definitions   
-  { 
+type_definition:
+  LID COLON kind EQUAL forall algebraic_datatype_definitions
+  {
     let alphas = snd (List.split $5) in
-    let dcon = 
-      List.map (fun (pos, lid, vars, ty) -> 
+    let dcon =
+      List.map (fun (pos, lid, vars, ty) ->
 		(pos, lid, alphas @ vars, ty))
       $6
     in
-      (fst $1, snd $3, TName (snd $1), DAlgebraic dcon) 
+      (fst $1, snd $3, TName (snd $1), DAlgebraic dcon)
   }
 
-| LID COLON kind 
+| LID COLON kind
   { (fst $1, snd $3, TName (snd $1), DAlgebraic []) }
 ;
 
@@ -469,9 +469,9 @@ algebraic_datatype_definitions:
 ;
 
 algebraic_datatype_definition:
-  UID COLON scheme				      
-{ 
-  (fst $1, DName (snd $1), snd (List.split (fst $3)), snd $3) 
+  UID COLON scheme
+{
+  (fst $1, DName (snd $1), snd (List.split (fst $3)), snd $3)
 }
 ;
 
@@ -484,19 +484,19 @@ value_definitions:
 ;
 
 value_definition:
-  forall pattern0 equal_expression                    { (position $3, 
-							 snd (List.split $1), 
+  forall pattern0 equal_expression                    { (position $3,
+							 snd (List.split $1),
 							 $2, $3) }
 ;
 
 equal_expression:
   EQUAL expression                                    { $2 }
-| COLON typ EQUAL expression                          
-      { ETypeConstraint 
+| COLON typ EQUAL expression
+      { ETypeConstraint
 	  (join $1 (position $4), $4, $2) }
-| pattern0 equal_expression                           { ELambda 
-							  (join 
-							     (pposition $1) 
+| pattern0 equal_expression                           { ELambda
+							  (join
+							     (pposition $1)
 							     (position $2), $1, $2) }
 ;
 
@@ -506,19 +506,19 @@ pattern:
 
 pattern3:
   pattern2                                             { $1 }
-| pattern3 COLON typ                                   
-      { PTypeConstraint 
-	  (join 
-	     (pposition $1) 
-	     (tposition $3), $1, $3) 
+| pattern3 COLON typ
+      { PTypeConstraint
+	  (join
+	     (pposition $1)
+	     (tposition $3), $1, $3)
       }
 ;
 
 pattern2:
   pattern1                                             { $1 }
-| LID AS pattern2                                      
-{ 
-  PAlias (join (fst $1) (pposition $3), SName (snd $1), $3) 
+| LID AS pattern2
+{
+  PAlias (join (fst $1) (pposition $3), SName (snd $1), $3)
 }
 ;
 
@@ -529,39 +529,39 @@ pattern1:
 ;
 
 pattern10:
-  pattern0 { $1 } 
-| UID pattern1s 
-{ 
-  PData (join (fst $1) (plposition $2), DName (snd $1), $2) 
+  pattern0 { $1 }
+| UID pattern1s
+{
+  PData (join (fst $1) (plposition $2), DName (snd $1), $2)
 }
 ;
 
 pattern0:
-  LID                                                   
-{ 
+  LID
+{
   PVar (fst $1, SName (snd $1))
 }
-| UID 
-{ 
-  PData (fst $1, DName (snd $1), []) 
-} 
+| UID
+{
+  PData (fst $1, DName (snd $1), [])
+}
 | WILD                                                  { PWildcard $1 }
 | INTEGER                                        { let pos = fst $1
 						   and value = snd $1 in
-						     PPrimitive 
+						     PPrimitive
 						     (pos,
 						      PIntegerConstant value) }
 | CHAR                                        { let pos = fst $1
 						   and value = snd $1 in
-						     PPrimitive 
+						     PPrimitive
 						     (pos,
 						      PCharConstant value)
 						 }
 | LPAREN RPAREN                                         { match_unit $1 }
 /* { tuple_pat (join $1 $2) [] } */
 | LPAREN pattern RPAREN                                 { $2 }
-| LPAREN pattern COMMA patterns RPAREN                  
-{ tuple_pat (join $1 $5) 
+| LPAREN pattern COMMA patterns RPAREN
+{ tuple_pat (join $1 $5)
     ($2 :: $4) }
 ;
 
@@ -574,5 +574,3 @@ pattern1s:
   pattern0						{ [ $1 ] }
 | pattern0 pattern1s					{ $1 :: $2 }
 ;
-
-

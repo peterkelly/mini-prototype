@@ -89,7 +89,7 @@ SOURCES=								 \
   miniSolver.mli							 \
   miniSolver.ml								 \
   errors.mli								 \
-  errors.ml								
+  errors.ml
 
 DOC_FILES=$(filter %.ml %.mli, $(SOURCES))
 
@@ -118,4 +118,3 @@ TRASH=*~ mini.opt mini mini.o mini.cm{x,o,i} *.output \
 	miniParser.ml constraintParser.ml miniLexer.ml constraintLexer.ml
 
 realclean: clean clean-doc nobackup
-

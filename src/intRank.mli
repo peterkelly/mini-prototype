@@ -32,4 +32,3 @@ val compare: t -> t -> int
 
 val none: t
 val outermost: t
-

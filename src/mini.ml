@@ -22,21 +22,20 @@
 (* $Id $*)
 
 (** Task registration. *)
-let _ = 
+let _ =
   MiniSyntacticAnalysis.register_tasks ();
   MiniPrettyPrinter.register_tasks MiniSyntacticAnalysis.parse_program_task;
   MiniInfer.register_tasks MiniSyntacticAnalysis.parse_program_task;
   MiniConstraintPrinter.register_tasks ();
-  MiniSolver.register_tasks (Print.print_variable true) 
-  
+  MiniSolver.register_tasks (Print.print_variable true)
+
 (** Program execution. *)
-let _ = 
-  Errors.handle 
+let _ =
+  Errors.handle
     (fun () ->
-       Processing.execute 
+       Processing.execute
 	 ~default_start: MiniSyntacticAnalysis.parse_program_task
 	 ~default_end: MiniSolver.print_env_task
 	 ~usage:("usage: "^Sys.executable_name^" [options] filename\n\
                   List of possible tasks: " ^
 		   (String.concat ", " (Processing.get_registered_tasks ()))))
-

@@ -32,9 +32,8 @@ val reset: unit -> unit
     variable naming conventions, unless [reset] is called in
     between. The context [context] may be used to pass additional
     information to the printing function. *)
-val print_variable: 
+val print_variable:
   ?user_name_from_int:(int -> string) -> bool -> MultiEquation.variable -> string
 
-val print_term: 
+val print_term:
   ?user_name_from_int:(int -> string) -> bool -> MultiEquation.crterm -> string
-

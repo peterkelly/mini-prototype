@@ -22,7 +22,7 @@
 (* $Id: basicSetEquations.mli 421 2006-12-22 09:27:42Z regisgia $ *)
 
 (** This module provides a solver for equations involving set constants,
-   variables, and disjoint sums (i.e. unions) thereof. 
+   variables, and disjoint sums (i.e. unions) thereof.
 *)
 
 module type SetType =
@@ -56,30 +56,30 @@ end
 
 module Make (Set : SetType) :
 sig
-  
+
   (** A [term] denotes a disjoint sum of sets with unification
       variables inside. *)
-  type term 
-    
-  (** [variable s] returns a fresh unification variable whose 
+  type term
+
+  (** [variable s] returns a fresh unification variable whose
       denotation cannot intersect [s]. *)
   val variable : Set.t -> term
-    
+
   (** [svariable ()] is equivalent to [variable Set.empty]. *)
   val svariable : unit -> term
 
   (** [empty] denotes the constant empty set. *)
   val empty : term
 
-  (** [sum s t] adds [s] to the sum denoted by [t]. 
+  (** [sum s t] adds [s] to the sum denoted by [t].
       [Error] is raised if [s] intersects [t]. *)
   val sum : Set.t -> term -> term
 
   (** [unify t t'] solves the equality between two disjoint sums
-      by determining the unification variable if necessary. 
+      by determining the unification variable if necessary.
       If the equality is not satisfiable, [Error] is raised. *)
   val unify : term -> term -> unit
-	
+
   (** [Error] is raised if the construction of a disjoint sum has
       failed. *)
   exception Error

@@ -37,4 +37,3 @@ val same: t -> t -> bool
 (** [none] is a distinguished mark, created via an initial call to
     [fresh()]. *)
 val none: t
-

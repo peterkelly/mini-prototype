@@ -21,8 +21,8 @@
 
 (* $Id: errors.mli 421 2006-12-22 09:27:42Z regisgia $ *)
 
-(** [handle f] runs [f] and exits with exit status 0. 
-    If [f] raises an error exception, a error message is printed 
+(** [handle f] runs [f] and exits with exit status 0.
+    If [f] raises an error exception, a error message is printed
     and we quit the program with exit status 1. *)
 val handle: ?dont_exit:bool -> (unit -> unit) -> unit
 

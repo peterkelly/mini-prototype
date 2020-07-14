@@ -30,23 +30,23 @@ open CoreAlgebra
 open Constraint
 
 (** The solver environment. *)
-type environment 
+type environment
 
 (** The constraint to solve. *)
 type tconstraint = Constraint.tconstraint
 
 (** A [solving_step] describes a elementary step of the solver. *)
-type solving_step = 
+type solving_step =
   | Init of tconstraint
   | Solve of tconstraint
   | Solved of tconstraint
   | UnifyTerms of crterm * crterm
   | UnifyVars of variable * variable
-  | Generalize of int * variable list 
+  | Generalize of int * variable list
 
 (** [solve tracer c] solves [c] by doing in-place modifications resulting
     in a environment. *)
-val solve: ?tracer:(solving_step -> unit) 
+val solve: ?tracer:(solving_step -> unit)
   -> tconstraint -> environment
 
 (** [environment_as_list env] converts [env] into a list. *)

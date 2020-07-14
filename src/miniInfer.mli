@@ -21,7 +21,7 @@
 
 (* $Id: miniInfer.mli 421 2006-12-22 09:27:42Z regisgia $ *)
 
-(** This module expresses the problem of type inference for MiniML 
+(** This module expresses the problem of type inference for MiniML
     programs to the problem of constraint solving by a transformation
     of program into typing constraints. *)
 
@@ -34,17 +34,17 @@ open MiniTypingEnvironment
  (** Constraint contexts. *)
 type context = tconstraint -> tconstraint
 
-(** [infer_program p] generates a constraint context that describes 
+(** [infer_program p] generates a constraint context that describes
     program [p]. *)
 val infer_program: environment -> program -> environment * context
 
 (** [generate_constraint p] generates a closed constraint that describes
     the typing of [p]. *)
 val generate_constraint: program -> tconstraint
-    
+
 (** [init_env ()] returns a constraint context that defines the builtins
     of the source language. *)
-val init_env: unit -> context * environment 
+val init_env: unit -> context * environment
 
 (** [remove_init_context] returns the context part that concerns the
     initial environment. *)

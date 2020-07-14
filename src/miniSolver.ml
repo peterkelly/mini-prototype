@@ -21,7 +21,7 @@
 
 (* $Id: miniSolver.ml 421 2006-12-22 09:27:42Z regisgia $ *)
 
-(** This module instantiate the {!Solver} module for the Mini language. 
+(** This module instantiate the {!Solver} module for the Mini language.
     It also manages some tracing of the solving process. *)
 
 open Misc
@@ -31,35 +31,34 @@ open MultiEquation
 include Solver (* TEMPORARY probablement inutile *)
 
 let solve_constraint_task = "solve-constraint"
-  
+
 let solve_constraint ?tracer c =
   solve ?tracer:tracer c
 
 let print_env_task = "print-env"
 
-let rec print_env ?use_user_def print env = 
+let rec print_env ?use_user_def print env =
   let print_entry acu (name, t) =
     if name.[0] <> '_' then
       acu
       ^ "val " ^ name ^ ": " ^ (print t) ^ "\n"
-    else 
+    else
       acu
   in
-    Printf.printf "%s\n" 
+    Printf.printf "%s\n"
       (List.fold_left print_entry "" (environment_as_list env))
 
 let register_tasks term_printer =
   Processing.register
-    solve_constraint_task 
+    solve_constraint_task
     ([], ignore)
-    [ [ MiniInfer.generate_constraint_task; 
+    [ [ MiniInfer.generate_constraint_task;
 	MiniSyntacticAnalysis.parse_constraint_task ] ]
     (fun t -> solve_constraint (List.hd t))
     (const true);
-    
+
   Processing.register
     print_env_task ([], ignore)
     [ [ solve_constraint_task ] ]
-    (fun t -> print_env term_printer (List.hd t)) 
+    (fun t -> print_env term_printer (List.hd t))
     (const true);
-    

@@ -35,14 +35,14 @@ open CoreAlgebra
 type sname = SName of string
 
 (* TEMPORARY renommer en formula *)
-(** [type_constraint] defines a syntax for the constraints between 
+(** [type_constraint] defines a syntax for the constraints between
     types. *)
 type ('crterm, 'variable) type_constraint =
   | CTrue of position
   | CDump of position
   | CEquation of position * 'crterm * 'crterm
   | CConjunction of ('crterm, 'variable) type_constraint list
-  | CLet of ('crterm, 'variable) scheme list 
+  | CLet of ('crterm, 'variable) scheme list
       * ('crterm, 'variable) type_constraint
   | CInstance of position * sname * 'crterm
   | CDisjunction of ('crterm, 'variable) type_constraint list
@@ -56,15 +56,15 @@ type ('crterm, 'variable) type_constraint =
     role, that is, they all end up universally quantified in the type
     scheme. A header is a mapping of names to types. *)
 and ('crterm, 'variable) scheme =
-  | Scheme of position * 'variable list * 'variable list 
+  | Scheme of position * 'variable list * 'variable list
       * ('crterm, 'variable) type_constraint * ('crterm * position) StringMap.t
 
-(** The variables that appear in contraints are the same as the multi-equation 
+(** The variables that appear in contraints are the same as the multi-equation
     ones. *)
 type variable = MultiEquation.variable
 
 (** The types in contraints are implemented using the internal data structure
-    defined in {!CoreAlgebra}. The same data structure is also used in 
+    defined in {!CoreAlgebra}. The same data structure is also used in
     {!MultiEquation}. *)
 type crterm = variable CoreAlgebra.arterm
 
@@ -105,9 +105,9 @@ val conj: tconstraint list -> tconstraint
     [exists x.(f x)]. *)
 val exists: ?pos:position -> (crterm -> tconstraint) -> tconstraint
 
-(** [exists3 f] is a shortcut for 
+(** [exists3 f] is a shortcut for
     [exists (fun x -> exists (fun y -> exists (fun z -> f x y z)))]. *)
-val exists3: ?pos:position -> 
+val exists3: ?pos:position ->
   (crterm -> crterm -> crterm -> tconstraint) -> tconstraint
 
 (** [fl vs c] returns the constraint [forall vs.c]. *)
@@ -116,21 +116,21 @@ val fl: ?pos:position -> variable list -> tconstraint -> tconstraint
 (** [exists_list l f] associates a fresh variable with every element
     in the list [l], yielding an association list [m], and returns
     the constraint [exists m.(f m)]. *)
-val exists_list: 
-  ?pos:position -> 'a list -> (('a * crterm) list -> tconstraint) 
+val exists_list:
+  ?pos:position -> 'a list -> (('a * crterm) list -> tconstraint)
   -> tconstraint
 
 (** [forall_list l f] associates a fresh variable with every element
     in the list [l], yielding an association list [m], and returns
     the constraint [forall m.(f m)]. *)
-val forall_list: 
-  ?pos:position -> tname list -> ((tname * crterm) list -> tconstraint) 
+val forall_list:
+  ?pos:position -> tname list -> ((tname * crterm) list -> tconstraint)
   -> tconstraint
 
 (** [exists_set names f] associates a fresh variable with every name in
     the set [names], yielding a map [m] of names to variables, and returns
     the constraint [exists m.(f m)]. *)
-val exists_set: ?pos:position -> StringSet.t -> 
+val exists_set: ?pos:position -> StringSet.t ->
   ((crterm * position) StringMap.t -> tconstraint) -> tconstraint
 
 (** [monoscheme header] turns [header] into a monomorphic type scheme. *)
@@ -140,13 +140,13 @@ val monoscheme: ?pos:position -> (crterm * position) StringMap.t -> tscheme
     the set [names], yielding a map [m] of names to variables, and returns
     the type scheme [forall rqs m [f m] m], where the variables in [rqs]
     are rigid and the variables in [m] are flexible. *)
-val scheme: ?pos:position -> variable list -> StringSet.t -> 
+val scheme: ?pos:position -> variable list -> StringSet.t ->
   ((crterm * position) StringMap.t -> tconstraint) -> tscheme
 
-(** [scheme' rqs rnames fnames f] associates a fresh variable with every 
-  name in the set [fnames] and [rnames], yielding a map [m] of names to 
-  variables, and returns the type scheme [forall (rqs @ rm) fm [f m] m], 
-  where the variables in [rqs] and [rm] are rigid and the variables in [fm] 
+(** [scheme' rqs rnames fnames f] associates a fresh variable with every
+  name in the set [fnames] and [rnames], yielding a map [m] of names to
+  variables, and returns the type scheme [forall (rqs @ rm) fm [f m] m],
+  where the variables in [rqs] and [rm] are rigid and the variables in [fm]
   are flexible. *)
 val scheme': ?pos:position -> variable list -> StringSet.t -> StringSet.t ->
   ((crterm * position) StringMap.t -> tconstraint) -> tscheme

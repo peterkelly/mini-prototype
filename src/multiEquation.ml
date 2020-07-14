@@ -52,15 +52,15 @@ and descriptor = {
     mutable name	: tname option;
     mutable pos	: position option;
     mutable var	: variable option
-  } 
+  }
 
 and structure = variable CoreAlgebra.term
 
-(** A variable can be either flexible, rigid or a constant. 
-    In the two last cases, a name has been given by the user. 
+(** A variable can be either flexible, rigid or a constant.
+    In the two last cases, a name has been given by the user.
     - [Flexible] variable can be unified with other terms
     whereas [Rigid] and [Constant] variables cannot.
-    - [Constant] type variable are used to denote user 
+    - [Constant] type variable are used to denote user
     type constructor. Their names cannot be used for flexible
     or rigid variables. *)
 and variable_kind = Rigid | Flexible | Constant
@@ -72,13 +72,13 @@ type crterm = variable CoreAlgebra.arterm
 type pool = {
 	    number	  : int; (** The present pool's rank. *)
     mutable inhabitants : variable list
-  } 
+  }
 
-let is_rigid v = 
+let is_rigid v =
   let desc = UnionFind.find v in
     desc.kind = Rigid || desc.kind = Constant
 
-let is_flexible v = 
+let is_flexible v =
   let desc = UnionFind.find v in
     desc.kind = Flexible
 
@@ -87,7 +87,7 @@ let is_flexible v =
 let new_pool pool = {
   number = pool.number + 1;
   inhabitants = []
-} 
+}
 
 (** [init] produces a fresh initial state. It consists of an empty
     environment and a fresh, empty pool. *)
@@ -107,7 +107,7 @@ let register pool v =
 let introduce pool v =
   let desc = UnionFind.find v in
     desc.rank <- pool.number;
-    register pool v 
+    register pool v
 
   (* TEMPORARY time to perform the occur check on the variables which we
      just ranked [none]. On peut 'eventuellement integrer l'occur check
@@ -117,7 +117,7 @@ let introduce pool v =
      viewed as the entry point of a type scheme. The body of the type scheme
      is the term obtained by traversing the structure below the entry
      point. The type scheme's universally quantified variables have rank
-     [none], while its free variables have nonnegative ranks. 
+     [none], while its free variables have nonnegative ranks.
 
      Note that, when considering several such variables, the type schemes
      that they represent may share some of their structure. No copying is
@@ -167,14 +167,14 @@ let instance pool v =
        must check this condition first, since we must not read [desc.rank]
        unless we know that the variable hasn't been copied yet. *)
 
-    if setp desc then 
+    if setp desc then
       get desc
 
     (* Otherwise, check the variable's rank. If it is other than [none],
        then the variable must not be copied. *)
 
     else if (IntRank.compare desc.rank IntRank.none <> 0 || desc.kind = Constant)
-    then 
+    then
       v
 
     (* Otherwise, the variable must be copied. We create a new variable,
@@ -183,22 +183,22 @@ let instance pool v =
        [copy], so as to guarantee termination in the presence of cyclic
        terms. *)
 
-    else 
-      let desc' = 
+    else
+      let desc' =
 	  {
 	    structure = None;
 	    rank = pool.number;
-	    mark = Mark.none; 
+	    mark = Mark.none;
 	    kind = Flexible;
 	    name = (match desc.kind with Rigid -> None | _ -> desc.name);
 	    pos = None;
 	    var = None
-	  } 
+	  }
       in
       let v' = UnionFind.fresh desc' in
 	register pool v';
 	set desc v';
-	let v' = 
+	let v' =
 	  match desc.structure with
 	    | None ->
 		v'
@@ -250,7 +250,7 @@ let rec chop pool = function
 
   | TTerm term ->
       let v =
-	UnionFind.fresh 
+	UnionFind.fresh
 	  { (* TEMPORARY invoquer une fonction de c'reation dans Unifier? *)
 	    structure = Some (map (chop pool) term);
 	    rank = pool.number;
@@ -282,49 +282,49 @@ let variable kind ?name ?structure ?pos () =
     name = name;
     pos = pos;
     var = None
-  } 
+  }
 
-let explode t = 
+let explode t =
   (* use of [chopi] is OK here, as this function is used only during pretty-printing *)
   let v = chopi IntRank.outermost t in
     match (UnionFind.find v).structure with
 	None -> Var v
       | Some t -> t
 
-let variable_name v = 
+let variable_name v =
   (UnionFind.find v).name
 
-let is_structured v = 
+let is_structured v =
   (UnionFind.find v).structure <> None
 
-let variable_structure v = 
+let variable_structure v =
   (UnionFind.find v).structure
 
-let is_redundant = 
+let is_redundant =
   UnionFind.redundant
 
-let are_equivalent v1 v2 = 
+let are_equivalent v1 v2 =
   UnionFind.equivalent v1 v2
 
-let inhabitants p = 
+let inhabitants p =
   p.inhabitants
 
-let number p = 
+let number p =
   p.number
 
 (** [variable()] returns a new variable. *)
-let variable kind ?name ?structure ?pos () = 
-  let structure = 
-    match structure with 
-      | Some t -> 
-	  let v = chopi IntRank.none t in 
+let variable kind ?name ?structure ?pos () =
+  let structure =
+    match structure with
+      | Some t ->
+	  let v = chopi IntRank.none t in
 	    Some (Var v)
       | None -> None
   in
     variable kind ?name:name ?structure:structure ?pos:pos ()
 
-(** [variable_list xs] allocates a fresh variable for every element in the 
-  list [xs], and returns both a list of these variables and an association 
+(** [variable_list xs] allocates a fresh variable for every element in the
+  list [xs], and returns both a list of these variables and an association
   list that maps elements to variables, viewed as types. *)
 let variable_list kind xs =
   List.fold_right (fun x (vs, xts) ->
@@ -332,11 +332,11 @@ let variable_list kind xs =
 		       v :: vs, (x, TVariable v) :: xts
 		  ) xs ([], [])
 
-(** [variable_list_from_names f xs] allocates a fresh variable for every 
-  string in the list [xs], and returns both a list of these variables 
+(** [variable_list_from_names f xs] allocates a fresh variable for every
+  string in the list [xs], and returns both a list of these variables
   and an association list that maps elements to variables, viewed as types. *)
 let variable_list_from_names kind xs =
-  List.fold_right 
+  List.fold_right
     (fun x (vs, xts) ->
        let k, n = kind x in
        let v = variable k ?name:n () in
@@ -347,10 +347,9 @@ let variable_list_from_names kind xs =
     set [xs], and returns both a list of these variables and a map of
     elements to variables, viewed as types. *)
 let variable_set kind xs =
-  StringSet.fold 
+  StringSet.fold
     (fun x (vs, xts) ->
        let k, n = kind (TName x) in
        let v = variable k ?name:n () in
 	 v :: vs, StringMap.add x ((TVariable v), undefined_position) xts
     ) xs ([], StringMap.empty)
-

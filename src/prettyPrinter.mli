@@ -21,7 +21,7 @@
 
 (* $Id$ *)
 
-(** This module provides a common formatting interface to 
+(** This module provides a common formatting interface to
     pretty-print in LaTeX, raw text or module Format mode. *)
 
 type formatter_output = {
@@ -35,13 +35,13 @@ type formatter_output = {
   margin	: int;
 }
 
-type output = 
-    Channel of out_channel 
+type output =
+    Channel of out_channel
   | Buffer  of Buffer.t
 
-type mode = 
-    Latex     of output 
-  | Txt       of output 
+type mode =
+    Latex     of output
+  | Txt       of output
   | Formatter of formatter_output
 
 val output_string : output -> string -> unit

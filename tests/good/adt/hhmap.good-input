@@ -4,9 +4,9 @@ type map : ( * -> * ) -> * -> * -> * = forall f a b.
 let id map x =
   match map with
     Map f => f (\x. x) x
-  end 
+  end
 
-type list : * -> * = forall a. 
+type list : * -> * = forall a.
   Nil : list a
 | Cons : a -> list a -> list a
 

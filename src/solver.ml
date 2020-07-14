@@ -58,7 +58,7 @@ exception Inconsistency
 
 type tconstraint = Constraint.tconstraint
 
-type solving_step = 
+type solving_step =
   | Init of tconstraint
   | Solve of tconstraint
   | Solved of tconstraint
@@ -70,12 +70,12 @@ type environment =
   | EEmpty
   | EEnvFrame of environment * string * variable
 
-let environment_as_list e = 
+let environment_as_list e =
   let rec conv acu = function
-    | EEmpty -> 
+    | EEmpty ->
 	acu
 
-    | EEnvFrame (env, name, v) -> 
+    | EEnvFrame (env, name, v) ->
 	conv ((name, v)::acu) env
   in
     conv [] e
@@ -100,7 +100,7 @@ let generalize old_pool young_pool =
      number.)  These variables are also marked as ``young'', so as to
      be identifiable in constant time. *)
 
-  let young_number = 
+  let young_number =
     number young_pool in
 
   let sorted =
@@ -115,7 +115,7 @@ let generalize old_pool young_pool =
     let rank = desc.rank in
     try
       sorted.(rank) <- v :: sorted.(rank)
-    with Invalid_argument _ -> 
+    with Invalid_argument _ ->
       (* The invariant is broken. *)
       failwith (Printf.sprintf "Out of bound when generalizing %s/%s"
 		   (string_of_int rank)
@@ -188,7 +188,7 @@ let generalize old_pool young_pool =
     in
       try
 	Misc.iter traverse sorted.(k)
-      with Invalid_argument _ -> 
+      with Invalid_argument _ ->
 	(* The invariant is broken. *)
 	failwith "Out of bound in traverse"
 
@@ -218,7 +218,7 @@ let generalize old_pool young_pool =
 	if not (UnionFind.redundant v) then
 	  register old_pool v
       ) sorted.(k)
-    with Invalid_argument _ -> 
+    with Invalid_argument _ ->
       (* The invariant is broken. *)
       failwith "Out of bound in young refresh."
   done;
@@ -253,11 +253,11 @@ let distinct_variables pos vl =
 			     raise (DuplicatedMark m);
 			   desc.mark <- m
 		) vl
-    with DuplicatedMark m -> 
+    with DuplicatedMark m ->
       let vl' = List.filter (fun v -> Mark.same (UnionFind.find v).mark m)
-		 vl 
+		 vl
       in
-	raise (NonDistinctVariables (pos, vl')) 
+	raise (NonDistinctVariables (pos, vl'))
 
 (** [generic_variables vl] checks that every variable in the list [vl]
     has rank [none]. *)
@@ -305,19 +305,19 @@ let solve tracer env pool c =
 	   solve env pool c
 
        | CLet (schemes, c2) ->
-	   let env' = List.fold_left 
+	   let env' = List.fold_left
 			(fun env' scheme -> (
 			   concat env' (solve_scheme env pool scheme)
 			 )) env schemes in (
 	       solve env' pool c2)
 
-       | CInstance (pos, SName name, term) -> 
+       | CInstance (pos, SName name, term) ->
 	   let t = lookup pos name env in
 	   let instance = instance pool t in
 	   let t' = chop pool term in
 	     unify_terms pos pool instance t'
 
-       | CDisjunction cs -> 
+       | CDisjunction cs ->
 	   assert false
 
     );
@@ -327,8 +327,8 @@ let solve tracer env pool c =
 
     | Scheme (_, [], [], c1, header) ->
 
-	(* There are no quantifiers. In this restricted case, 
-	   there is no need to stop and generalize. 
+	(* There are no quantifiers. In this restricted case,
+	   there is no need to stop and generalize.
 	   This is only an optimization of the general case. *)
 
 	solve env pool c1;
@@ -339,7 +339,7 @@ let solve tracer env pool c =
 	  (* The general case. *)
 	  let vars = rqs @ fqs in
 	  let pool' = new_pool pool in
-	    List.iter (introduce pool') rqs;  
+	    List.iter (introduce pool') rqs;
 	    List.iter (introduce pool') fqs;
 	    let header = StringMap.map (fun (t, _) -> chop pool' t) header in
 	      solve env pool' c1;
@@ -355,7 +355,7 @@ let solve tracer env pool c =
 		   ) header env
 
   and unify_terms pos pool t1 t2 =
-    unify 
+    unify
       ~tracer:(fun v1 v2 -> tracer (UnifyVars (v1, v2)))
       pos (register pool) t1 t2
   in (
@@ -375,5 +375,4 @@ let solve ?tracer c =
   let tracer = default ignore tracer in
     tracer (Init c);
     (* TEMPORARY integrer un occur check ici aussi *)
-    solve tracer env pool c 
-
+    solve tracer env pool c

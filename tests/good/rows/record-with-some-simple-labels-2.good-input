@@ -1,2 +1,2 @@
-let f x =  { l1 = x and l2 = ()} 
+let f x =  { l1 = x and l2 = ()}
 

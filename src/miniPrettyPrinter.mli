@@ -23,19 +23,19 @@
 
 (** This modules instanciates {!PrettyPrinter} for the Mini language. *)
 
-(** [print_expression e] pretty-prints [e] according to the active 
+(** [print_expression e] pretty-prints [e] according to the active
     printing mode. *)
 val print_expression    : MiniAst.expression -> unit
 
-(** [print_binding b] pretty-prints [b] according to the active 
+(** [print_binding b] pretty-prints [b] according to the active
     printing mode. *)
 val print_binding       : MiniAst.binding -> unit
 
-(** [print_binding p] pretty-prints [p] according to the active 
+(** [print_binding p] pretty-prints [p] according to the active
     printing mode. *)
 val print_program       : MiniAst.program -> unit
 
-(** [print_type paren t] pretty-prints [t] according to the active 
+(** [print_type paren t] pretty-prints [t] according to the active
     printing mode. If [paren] is set, all the parenthesis are shown. *)
 val print_type		: ?paren:bool -> MiniAst.typ -> unit
 

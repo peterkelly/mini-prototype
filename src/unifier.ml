@@ -107,22 +107,22 @@ let unify ?tracer pos register =
       *)
 
       let fresh, merge, merge1, merge2 =
-	let kind = 
+	let kind =
 	  match desc1.kind, desc2.kind with
 	      k1, k2 when is_rigid v1 -> k1
 	    | k1, k2 when is_rigid v2 -> k2
 	    | _ -> Flexible
 	in
-	let name = 
+	let name =
 	  match desc1.name, desc2.name with
-	      Some name1, Some name2 -> 
-		if name1 <> name2 then 
+	      Some name1, Some name2 ->
+		if name1 <> name2 then
 		  if is_rigid v1 then Some name1
 		  else if is_rigid v2 then Some name2
 		  else None
 		else Some name1
 	    | Some name, _ | _, Some name -> Some name
-	    | _ -> None 
+	    | _ -> None
 	in
 	let rank1 = desc1.rank
 	and rank2 = desc2.rank in
@@ -135,7 +135,7 @@ let unify ?tracer pos register =
 	      UnionFind.union v2 v1;
 	      desc1.kind <- kind;
 	      desc1.name <- name;
-	      desc1.structure <- desc2.structure 
+	      desc1.structure <- desc2.structure
 	    in
 	      fresh ?name:name kind rank1, merge1, merge1, merge2
 	  else
@@ -160,7 +160,7 @@ let unify ?tracer pos register =
 
 	match desc1.structure, desc2.structure, merge1, merge2 with
 
-	  (* Neither multi-equation contains a term. 
+	  (* Neither multi-equation contains a term.
 	     Merge them; we're done. *)
 
 	  | None, None, _, _ when is_flexible v1 && is_flexible v2 ->
@@ -180,7 +180,7 @@ let unify ?tracer pos register =
 	  | _, Some (Var v), _, _ ->
 	      unify pos v v1
 
-	  (* It is forbidden to unify rigid type variables with 
+	  (* It is forbidden to unify rigid type variables with
 	     a structure. *)
 
 	  | None, _, _, _ (* v1 is rigid. *) ->
@@ -257,19 +257,19 @@ let unify ?tracer pos register =
 	     while the right-hand one contains a ``free'' term; or the
 	     converse. *)
 
-	  | Some (RowCons (label1, hd1, tl1)), 
-	    Some (App (term, term')), 
-	    merge1, merge2 
-	  | Some (App (term, term')), 
-	    Some (RowCons (label1, hd1, tl1)), 
-	    merge2, merge1 -> 
-	      let attach son = 
+	  | Some (RowCons (label1, hd1, tl1)),
+	    Some (App (term, term')),
+	    merge1, merge2
+	  | Some (App (term, term')),
+	    Some (RowCons (label1, hd1, tl1)),
+	    merge2, merge1 ->
+	      let attach son =
 		let hd, tl = twice fresh None None in
 		  filter son (RowCons (label1, hd, tl));
 		  hd, tl
 	      in
 	      let hd, tl = attach term
-	      and hd', tl' = attach term' 
+	      and hd', tl' = attach term'
 	      in
 		filter hd1 (App (hd, hd'));
 		filter tl1 (App (tl, tl'))
@@ -278,14 +278,14 @@ let unify ?tracer pos register =
 	     while the right-hand one contains a uniform row term; or
 	     the converse. *)
 
-	  | Some (RowUniform content2), Some (App (term2, term2')), 
+	  | Some (RowUniform content2), Some (App (term2, term2')),
 	    merge1, merge2
-	  | Some (App (term2, term2')), Some (RowUniform content2), 
+	  | Some (App (term2, term2')), Some (RowUniform content2),
 	    merge2, merge1 ->
 	      merge1 ();
 	      let attach son =
-		let content = fresh None in 
-		  filter son (RowUniform content); 
+		let content = fresh None in
+		  filter son (RowUniform content);
 		  content
 	      in
 	      let content1 = App (attach term2, attach term2')
@@ -293,9 +293,9 @@ let unify ?tracer pos register =
 		filter content2 content1
 
 
-	  | Some (RowCons (label1, hd1, tl1)), Some (RowUniform content2), 
+	  | Some (RowCons (label1, hd1, tl1)), Some (RowUniform content2),
 	    _, merge2
-	  | Some (RowUniform content2), Some (RowCons (label1, hd1, tl1)), 
+	  | Some (RowUniform content2), Some (RowCons (label1, hd1, tl1)),
 	    merge2, _ ->
 	      (* Keep the uniform representation, which is more compact. *)
 
@@ -318,4 +318,3 @@ let unify ?tracer pos register =
 	      filter tl1 (RowUniform content2)
 
   in unify pos
-

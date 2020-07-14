@@ -23,7 +23,7 @@
 
 (** A simple task manager.
     It enables the registration of the options and the control
-    of what has to be done by the program. 
+    of what has to be done by the program.
 *)
 
 open Misc
@@ -32,13 +32,13 @@ open Misc
 
 (* FIXME: try to type this. *)
 type task_name = string
-type process_type = task_name 
+type process_type = task_name
 type process_types = process_type list list
 type process_data  = Obj.t
 type process_datas = Obj.t list
 
-type process = 
-    { 
+type process =
+    {
       input_type : process_type list list;
       output_type: process_type;
       code       : process_types * process_datas -> process_type * process_data
@@ -46,7 +46,7 @@ type process =
 
 type options = (Arg.key * Arg.spec * Arg.doc) list * Arg.anon_fun
 
-type task = 
+type task =
     {
       name       : task_name;
       options    : options;
@@ -55,7 +55,7 @@ type task =
       is_filled  : unit -> bool
     }
 
-let registered_tasks = Hashtbl.create 13 
+let registered_tasks = Hashtbl.create 13
 
 let is_registered tname =
   Hashtbl.mem registered_tasks tname
@@ -63,14 +63,14 @@ let is_registered tname =
 let get_registered_tasks () =
    Hashtbl.fold (fun t _ acu -> t :: acu) registered_tasks []
 
-let task tname = 
+let task tname =
   try
     Hashtbl.find registered_tasks tname
   with Not_found -> failwith ("Unknown task: "^ tname)
 
-let as_process_code tname deps (f : 'a -> 'b) = 
-  fun (pts, pds) -> 
-    if deps = pts then 
+let as_process_code tname deps (f : 'a -> 'b) =
+  fun (pts, pds) ->
+    if deps = pts then
       (tname, (Obj.magic f : Obj.t list -> Obj.t) pds)
     else failwith ("Task typing problem during "^tname^" application.")
 
@@ -89,13 +89,13 @@ let register tname ((opts, af) as options) deps process is_filled =
 	      ^ tname ^".")
 
   (* This registration is consistent. *)
-  else 
+  else
       Hashtbl.add registered_tasks tname
 	{
 	  name       = tname;
 	  options    = options;
 	  depends_on = deps;
-	  process    = 
+	  process    =
 	    {
 	      input_type  = deps;
 	      output_type = tname;
@@ -110,20 +110,20 @@ let deps tname =
   (task tname).depends_on
 
 let rec needed_tasks_until stopper tasks tname =
-  let rec try_tasks tasks = function 
+  let rec try_tasks tasks = function
     | [] -> raise Not_found
-    | t :: ts -> 
-	try 
+    | t :: ts ->
+	try
 	  needed_tasks_until stopper (t :: tasks) t
 	with Not_found -> try_tasks tasks ts
   in
   if tname = stopper then tasks
-  else 
-    let deps = deps tname in 
+  else
+    let deps = deps tname in
       (* If a task has no deps, it should be an initial task. *)
       if deps = [] then
 	raise Not_found
-      else 
+      else
 	let ts = List.fold_left try_tasks tasks deps in
 	  ts
 
@@ -136,23 +136,23 @@ let trace_task tname () =
 
 let current_task = ref "__no_task"
 
-let is_task_traced task = 
+let is_task_traced task =
   StringSet.mem task (!traced_tasks)
 
 let is_current_task_traced () =
-  is_task_traced (!current_task) 
+  is_task_traced (!current_task)
 
-let debug s = 
-  if !debug_flag || is_current_task_traced () then 
+let debug s =
+  if !debug_flag || is_current_task_traced () then
     (output_string stderr (s ^ "\n"); flush stderr)
-    
+
 let todo = ref []
 
-let do_task tname = 
+let do_task tname =
   if not (List.mem tname (!todo)) then
     todo := tname :: (!todo)
 
-let add_wanted_tasks tasks = 
+let add_wanted_tasks tasks =
  let insert tasks t =
     let deps = (task t).depends_on in
     let rec task_remove t = function
@@ -171,7 +171,7 @@ let add_wanted_tasks tasks =
   in
     List.fold_left insert tasks (!todo)
 
-let processing_options tstart tend = 
+let processing_options tstart tend =
   [
     "--start"    , Arg.Set_string tstart  , "taskname Task to begin with";
     "--end"      , Arg.Set_string tend    , "taskname Task to end with";
@@ -182,15 +182,15 @@ let processing_options tstart tend =
 let trace_option tname =
   ("--trace-"^tname), Arg.Unit (trace_task tname), (" Trace "^tname)
 
-let options tstart tend = 
-  let options, afs = 
-    Hashtbl.fold (fun tname t (opts, afs) ->  
-		    (trace_option tname :: fst t.options @ opts, 
+let options tstart tend =
+  let options, afs =
+    Hashtbl.fold (fun tname t (opts, afs) ->
+		    (trace_option tname :: fst t.options @ opts,
 		     snd t.options :: afs))
       registered_tasks
       ([], [])
   in
-    Arg.align (processing_options tstart tend @ options), 
+    Arg.align (processing_options tstart tend @ options),
     fun s -> List.iter (fun f -> f s) afs
 
 let is_valid_initial_task tname =
@@ -199,14 +199,14 @@ let is_valid_initial_task tname =
        been given its inputs as execution arguments. *)
     (task tname).is_filled ()
 
-let options_analysis default_tstart default_tend usage = 
-  let tstart = ref default_tstart and tend = ref default_tend in 
+let options_analysis default_tstart default_tend usage =
+  let tstart = ref default_tstart and tend = ref default_tend in
   let options, anon_funs = options tstart tend in
     Arg.parse options anon_funs usage;
     options, !tstart, !tend
-      
+
 let execute_tasks options usage tstart tend =
-    if not (is_registered tend) then 
+    if not (is_registered tend) then
       begin
 	Arg.usage options usage;
 	failwith (tend ^ " has not been registered.")
@@ -219,29 +219,28 @@ let execute_tasks options usage tstart tend =
 	else (
 	  Printf.printf "%s is waiting for arguments.\n" tstart;
 	  exit 0
-	) 
+	)
       end
-    else 
+    else
       let ntasks = needed_tasks_until tstart [] tend @ [ tend ] in
       let ntasks_with_todo = add_wanted_tasks ntasks in
       let rec find_first r = function
 	| [] -> assert false
-	| t :: ts -> 
+	| t :: ts ->
 	    try StringMap.find t r with Not_found -> find_first r ts
       in
-	List.fold_left 
-	  (fun r t -> 
+	List.fold_left
+	  (fun r t ->
 	     current_task := t;
 	     debug ("Processing: "^t);
 	     let input_type = (task t).process.input_type in
 	     let args = List.map (find_first r) input_type in
-	       StringMap.add t 
+	       StringMap.add t
 		 (snd ((task t).process.code (input_type, args))) r)
 	  StringMap.empty
 	  ntasks_with_todo
 
-let execute ~default_start ~default_end ~usage = 
-  let options, tstart, tend = options_analysis default_start default_end usage 
-  in 
+let execute ~default_start ~default_end ~usage =
+  let options, tstart, tend = options_analysis default_start default_end usage
+  in
     ignore (execute_tasks options usage tstart tend)
-      

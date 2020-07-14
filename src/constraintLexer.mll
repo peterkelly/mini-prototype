@@ -37,12 +37,12 @@ exception Error of string * int * int
 
 let fail lexbuf message =
   raise (Error(message, Lexing.lexeme_start lexbuf, Lexing.lexeme_end lexbuf))
-  
+
 (*-----------------------*
  | Keyword recognition.  |
  *-----------------------*)
 
-let table = 
+let table =
   let t = Hashtbl.create 149 in
     List.iter (fun (keyword, token) ->
 		 Hashtbl.add t keyword token
@@ -61,7 +61,7 @@ let table =
     "*", (fun x -> TIMES x);
     ] ;
     t
-      
+
 let filter lexbuf =
   let lid = (Lexing.lexeme lexbuf) in
     try
@@ -75,7 +75,7 @@ let filter lexbuf =
  | Rules.  |
  *---------*)
 
-let newline = 
+let newline =
   ('\010' | '\013' | "\013\010")
 let blank =
   [' ' '\009' '\012']
@@ -83,9 +83,9 @@ let lowercase =
   ['a'-'z' '\223'-'\246' '\248'-'\255' '_']
 let uppercase =
   ['A'-'Z' '\192'-'\214' '\216'-'\222']
-let greek_letter = 
+let greek_letter =
   [  '\xCE' ] _
-let identchar = 
+let identchar =
   ['A'-'Z' 'a'-'z' '_' '\'' '0'-'9' '*' ]
 let forall = "\xE2\x88\x80"
 let exists = "\xE2\x88\x83"
@@ -104,8 +104,8 @@ let bin_literal =
 
 rule token = parse
   | newline { let pos = lexbuf.lex_curr_p in
-		lexbuf.lex_curr_p <- 
-		{ pos with 
+		lexbuf.lex_curr_p <-
+		{ pos with
 		    pos_lnum = pos.pos_lnum + 1;
 		    pos_bol  = pos.pos_cnum;
 		};
@@ -146,12 +146,11 @@ and comment = parse
             { fail lexbuf "Unterminated comment" }
 
   | newline { let pos = lexbuf.lex_curr_p in
-		lexbuf.lex_curr_p <- 
-		{ pos with 
+		lexbuf.lex_curr_p <-
+		{ pos with
 		    pos_lnum = pos.pos_lnum + 1;
 		    pos_bol  = pos.pos_cnum;
 		};
 		comment lexbuf }
   | _
             { comment lexbuf }
-

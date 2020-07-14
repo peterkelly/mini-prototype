@@ -35,6 +35,6 @@ val get: 'a t -> int -> 'a
     [a] to [x]. Slots are numbered 0 and up. **)
 val set: 'a t -> int -> 'a -> unit
 
-(** [iteri f t] computes [f i x] on every element [x] at position [i] 
+(** [iteri f t] computes [f i x] on every element [x] at position [i]
     in [t]. *)
 val iteri: (int -> 'a -> unit) -> 'a t -> unit

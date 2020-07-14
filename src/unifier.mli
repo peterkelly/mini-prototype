@@ -52,6 +52,5 @@ exception CannotUnify of position * crterm * crterm
     passed to [register], so as to make the unifier's client aware
     of its existence. The variable's rank is already properly
     initialized when [register] is called. *)
-val unify: ?tracer:(variable -> variable -> unit) -> position 
+val unify: ?tracer:(variable -> variable -> unit) -> position
   -> (variable -> unit) -> variable -> variable -> unit
-

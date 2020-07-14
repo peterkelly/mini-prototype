@@ -33,30 +33,30 @@ install-test:
 	  cp Makefile.test $$i/Makefile;	\
 	done
 
-check:	announce							    
+check:	announce
 	@ for i in bad/* good/*; do					    \
 	  $(MAKE) --silent -C $$i check 2> /dev/null || true;    	    \
-	done;				
-	@ echo "--------------------------------------------------------";  
-	@ echo "Global results:"				    
-	@ cat bad/*/bad-ok-counter > bad-ok-counter;			    
-	@ cat bad/*/bad-counter > bad-counter;				    
+	done;
+	@ echo "--------------------------------------------------------";
+	@ echo "Global results:"
+	@ cat bad/*/bad-ok-counter > bad-ok-counter;
+	@ cat bad/*/bad-counter > bad-counter;
 	@ echo "BAD:   "`wc -l bad-ok-counter | cut -f1 -d' '`		    \
-	/ `wc -l bad-counter | cut -f1 -d' '`				    
-	@ cat good/*/good-ok-counter > good-ok-counter;			    
-	@ cat good/*/good-counter > good-counter;			    
+	/ `wc -l bad-counter | cut -f1 -d' '`
+	@ cat good/*/good-ok-counter > good-ok-counter;
+	@ cat good/*/good-counter > good-counter;
 	@ echo "GOOD:  "`wc -l good-ok-counter | cut -f1 -d' '`		    \
-	/ `wc -l good-counter | cut -f1 -d' '`				    
-	@ echo "--------------------------------------------------------"; 
+	/ `wc -l good-counter | cut -f1 -d' '`
+	@ echo "--------------------------------------------------------";
 
 
 clean:
 	@ for i in bad/* good/*; do					    \
 	  $(MAKE) --silent -C $$i clean 2> /dev/null || true;    	    \
-	done;				
+	done;
 	@ rm --force *counter *~
 
 expected:
 	@ for i in bad/* good/*; do					    \
 	  $(MAKE) --silent -C $$i expected 2> /dev/null || true;    	    \
-	done;				
+	done;

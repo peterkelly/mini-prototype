@@ -38,14 +38,14 @@ type env = (tname -> t) * (tname -> t -> unit)
 
 (** [fresh_kind] returns a fresh kind for a type. *)
 val fresh_kind: unit -> t
-  
+
 (** [infer env typ] infers a kind for [typ]. *)
 val infer: env -> typ -> t
 
 (** [intern_kind env kind] internalizes a kind in the user-syntax. *)
 val intern_kind: env -> kind -> t
 
-(** [check pos env typ kind ] verifies that [typ] can be given the kind 
+(** [check pos env typ kind ] verifies that [typ] can be given the kind
     [kind]. *)
 val check: position -> env -> typ -> t -> unit
 

@@ -21,15 +21,15 @@
 
 (* $Id $*)
 
-(** This module implements a pretty printer for the constraint of the 
+(** This module implements a pretty printer for the constraint of the
     Mini language. *)
 include ConstraintPrettyPrinter (* TEMPORARY fusionner ces deux modules *)
 open PrettyPrinter
 open Constraint
 
 let print_constraint_task = "print-constraint"
-  
-let print_constraint args = 
+
+let print_constraint args =
   let c = List.hd args in
   (* Remove the context since it is not interesting. *)
   let c = match c with
@@ -41,10 +41,8 @@ let print_constraint args =
 let register_tasks () =
   Processing.register
     print_constraint_task ([], ignore)
-    [ [ MiniInfer.generate_constraint_task; 
+    [ [ MiniInfer.generate_constraint_task;
 	MiniSyntacticAnalysis.parse_constraint_task
       ] ]
     print_constraint
     (Misc.const true)
-
-

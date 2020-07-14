@@ -35,16 +35,16 @@ val undefined_position: position
 
 (** {2 Accessors} *)
 
-(** [column p] returns the number of characters from the 
+(** [column p] returns the number of characters from the
     beginning of the line of the Lexing.position [p]. *)
 val column : Lexing.position -> int
 
 (** [column p] returns the line number of to the Lexing.position [p]. *)
 val line : Lexing.position -> int
 
-(** [characters p1 p2] returns the character interval 
+(** [characters p1 p2] returns the character interval
     between [p1] and [p2] assuming they are located in the same
-    line. 
+    line.
 *)
 val characters : Lexing.position -> Lexing.position -> int * int
 
@@ -64,7 +64,7 @@ val ljoinf : ('a -> position) -> 'a list -> position
 
 val joinf : ('a -> position) -> 'a -> 'a -> position
 
-(** [string_of_characters (c1,c2)] returns the standard (Emacs-like) 
+(** [string_of_characters (c1,c2)] returns the standard (Emacs-like)
     representation of the character interval (c1,c2).
 *)
 val string_of_characters : int * int -> string
@@ -86,8 +86,6 @@ val pos_or_undef : position option -> position
 (** [cpos lexbuf] returns the current position of the lexer. *)
 val cpos : Lexing.lexbuf -> position
 
-(** [string_of_cpos p] returns a string representation of 
+(** [string_of_cpos p] returns a string representation of
     the lexer's current position. *)
 val string_of_cpos : Lexing.lexbuf -> string
-
-

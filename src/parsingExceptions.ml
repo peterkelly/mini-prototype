@@ -28,5 +28,3 @@ open Positions
 exception Unclosed of string * string * position * position
 
 exception Other of Lexing.lexbuf
-
-

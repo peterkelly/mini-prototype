@@ -23,19 +23,19 @@
 
 (** A simple task manager.
     It enables the registration of the options and the control
-    of what has to be done by the program. 
+    of what has to be done by the program.
 *)
 
 (** {2 Tasks} *)
 
 type task_name = string
-type process_type = task_name 
+type process_type = task_name
 type process_types = process_type list list
-type process_data  
-type process_datas 
+type process_data
+type process_datas
 
-type process = 
-    { 
+type process =
+    {
       input_type : process_type list list;
       output_type: process_type;
       code       : process_types * process_datas -> process_type * process_data
@@ -45,8 +45,8 @@ type task
 
 type options = (Arg.key * Arg.spec * Arg.doc) list * Arg.anon_fun
 
-val register: 
-  task_name -> options -> task_name list list 
+val register:
+  task_name -> options -> task_name list list
   -> ('a -> 'b) -> (unit -> bool) -> unit
 
 val is_task_traced: task_name -> bool
@@ -55,8 +55,7 @@ val get_registered_tasks : unit -> task_name list
 
 (** {2 Processing} *)
 
-val execute: 
+val execute:
   default_start:task_name -> default_end:task_name -> usage:string -> unit
 
 val debug: string -> unit
-

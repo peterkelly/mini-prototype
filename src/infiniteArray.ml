@@ -27,7 +27,7 @@
 type 'a t = {
     default: 'a;
     mutable table: 'a array
-  } 
+  }
 
 let default_size =
   16 (* must be non-zero *)
@@ -35,7 +35,7 @@ let default_size =
 let make x = {
   default = x;
   table = Array.make default_size x
-} 
+}
 
 let rec new_length length i =
   if i < length then

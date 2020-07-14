@@ -31,14 +31,14 @@ open CoreAlgebra
     constraints and referred to by [CInstance] constraints. *)
 type sname = SName of string
 
-(** [type_constraint] defines a syntax for the constraints between 
+(** [type_constraint] defines a syntax for the constraints between
     types. *)
 type ('crterm, 'variable) type_constraint =
   | CTrue of position
   | CDump of position
   | CEquation of position * 'crterm * 'crterm
   | CConjunction of ('crterm, 'variable) type_constraint list
-  | CLet of ('crterm, 'variable) scheme list 
+  | CLet of ('crterm, 'variable) scheme list
       * ('crterm, 'variable) type_constraint
   | CInstance of position * sname * 'crterm
   | CDisjunction of ('crterm, 'variable) type_constraint list
@@ -52,7 +52,7 @@ type ('crterm, 'variable) type_constraint =
     role, that is, they all end up universally quantified in the type
     scheme. A header is a mapping of names to types. *)
 and ('crterm, 'variable) scheme =
-  | Scheme of position * 'variable list * 'variable list 
+  | Scheme of position * 'variable list * 'variable list
       * ('crterm, 'variable) type_constraint * ('crterm * position) StringMap.t
 
 type variable = MultiEquation.variable
@@ -65,20 +65,20 @@ type crterm =
 type tconstraint =
     (crterm, variable) type_constraint
 
-type tscheme = 
+type tscheme =
     (crterm, variable) scheme
 
 (* TEMPORARY ne pas oublier d'expliquer que les rangs et les pools ne sont
    pas toujours d'accord entre eux *)
 
 let rec expand_term = function
-  | App (l, r) -> 
+  | App (l, r) ->
       TTerm (map (fun v -> TVariable v ) (App (l, r)))
 
   | _ -> assert false
 
-let rec expand_term_in_depth t = 
-  let expand v = 
+let rec expand_term_in_depth t =
+  let expand v =
     let desc = UnionFind.find v in
       match desc.structure with
 	| None -> TVariable v
@@ -87,35 +87,35 @@ let rec expand_term_in_depth t =
     TTerm (map expand t)
 
 let rec cposition = function
-  | CTrue pos -> 
+  | CTrue pos ->
       pos
 
-  | CDump pos -> 
+  | CDump pos ->
       pos
 
-  | CLet ([], c) -> 
+  | CLet ([], c) ->
       cposition c
 
-  | (CConjunction [] | CDisjunction []) -> 
+  | (CConjunction [] | CDisjunction []) ->
       undefined_position
 
-  | (CConjunction l | CDisjunction l) -> 
+  | (CConjunction l | CDisjunction l) ->
       join (cposition (List.hd l)) (cposition (last l))
 
   | CLet (l, _) ->
       join (sposition (List.hd l)) (sposition (last l))
 
-  | CEquation (p, _, _) -> 
+  | CEquation (p, _, _) ->
       p
 
-  | CInstance (p, _, _) -> 
+  | CInstance (p, _, _) ->
       p
 
-and sposition = function 
-  | Scheme (p, _, _, _, _) -> 
+and sposition = function
+  | Scheme (p, _, _, _, _) ->
       p
 
-(* TEMPORARY expliquer qu' on emploie la pile native pour les let 
+(* TEMPORARY expliquer qu' on emploie la pile native pour les let
    et conj. frames, plus des pools s'epar'es pour les let frames *)
 
 (** [x <? t] is an instance constraint. *)
@@ -137,21 +137,21 @@ let (^) c1 c2 =
     | _, _ ->
 	CConjunction [c1; c2]
 
-let conj cs = 
+let conj cs =
   List.fold_left ( ^ ) (CTrue undefined_position) cs
 
 (** [ex qs c] returns the constraint [exists qs.c]. We encode existential
    constraints in terms of [let] constraints, since the latter are more
    general. *)
 let ex ?pos qs c =
-  CLet ([ Scheme (pos_or_undef pos, [], qs, c, StringMap.empty) ], 
+  CLet ([ Scheme (pos_or_undef pos, [], qs, c, StringMap.empty) ],
 	CTrue (pos_or_undef pos))
 
 (** [fl qs c] returns the constraint [forall qs.c]. We encode universal
    constraints in terms of [let] constraints, since the latter are more
    general. *)
 let fl ?pos qs c =
-  CLet ([ Scheme (pos_or_undef pos, qs, [], c, StringMap.empty) ], 
+  CLet ([ Scheme (pos_or_undef pos, qs, [], c, StringMap.empty) ],
 	CTrue (pos_or_undef pos))
 
 (** [exists f] creates a fresh variable [v] and returns the constraint
@@ -161,7 +161,7 @@ let exists ?pos f =
   let c = f (TVariable v) in
   ex ~pos:(pos_or_undef pos) [ v ] c
 
-let exists3 ?pos f = 
+let exists3 ?pos f =
   exists (fun x -> exists (fun y -> exists (fun z -> f x y z)))
 
 (** [exists_list l f] associates a fresh variable with every element
@@ -175,11 +175,11 @@ let exists_list ?pos l f =
     in the list [l], yielding an association list [m], and returns
     the constraint [forall m.(f m)]. *)
 let forall_list ?pos l f =
-  let l, m = 
+  let l, m =
     List.fold_right (fun x (vs, xts) ->
 		       let v = variable Rigid ~name:x () in
 			 v :: vs, (x, TVariable v) :: xts
-		    ) l ([], []) 
+		    ) l ([], [])
   in
   fl ~pos:(pos_or_undef pos) l (f m)
 
@@ -202,14 +202,13 @@ let scheme ?pos rqs names f =
   let l, m = variable_set (const (Flexible, None)) names in
     Scheme (pos_or_undef pos, rqs, l, f m, m)
 
-(** [scheme' rqs rnames fnames f] associates a fresh variable with every 
-  name in the set [fnames] and [rnames], yielding a map [m] of names to 
-  variables, and returns the type scheme [forall (rqs @ rm) fm [f m] m], 
-  where the variables in [rqs] and [rm] are rigid and the variables in [fm] 
+(** [scheme' rqs rnames fnames f] associates a fresh variable with every
+  name in the set [fnames] and [rnames], yielding a map [m] of names to
+  variables, and returns the type scheme [forall (rqs @ rm) fm [f m] m],
+  where the variables in [rqs] and [rm] are rigid and the variables in [fm]
   are flexible. *)
 let scheme' ?pos rqs rnames fnames f =
   let fl, fm = variable_set (const (Flexible, None)) fnames in
   let rl, rm = variable_set (fun v -> (Rigid, Some v)) rnames in
   let m = map_union fm rm in
-  Scheme (pos_or_undef pos, rqs @ rl, fl, f m, m)     
-
+  Scheme (pos_or_undef pos, rqs @ rl, fl, f m, m)

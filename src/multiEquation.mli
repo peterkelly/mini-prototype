@@ -67,9 +67,9 @@ and descriptor = {
   mutable name: tname option;
   mutable pos: position option;
   mutable var: variable option
-} 
+}
 
-(** A multi-equation can be related to a term. In that case, it is 
+(** A multi-equation can be related to a term. In that case, it is
     structured. *)
 and structure = variable CoreAlgebra.term
 
@@ -86,7 +86,7 @@ type crterm = variable CoreAlgebra.arterm
 (** [is_structured v] tests if [v] is related to a term. *)
 val is_structured : variable -> bool
 
-(** [are_equivalent v1 v2] tests if [v1] and [v2] are in the same 
+(** [are_equivalent v1 v2] tests if [v1] and [v2] are in the same
     multi-equation. *)
 val are_equivalent : variable -> variable -> bool
 
@@ -98,30 +98,30 @@ val variable_structure : variable -> structure option
 
 (** [explode t] converts an arbitrary depth tree into a 1-depth one using
     variables. *)
-val explode : crterm -> variable CoreAlgebra.term 
+val explode : crterm -> variable CoreAlgebra.term
 
 (** [variable()] returns a new variable. *)
 val variable: variable_kind -> ?name:tname -> ?structure:crterm ->
   ?pos:position -> unit -> variable
 
-(** [variable_list xs] allocates a fresh variable for every element in the 
+(** [variable_list xs] allocates a fresh variable for every element in the
     list [xs], and returns both a list of these variables and an association
     list that maps elements to variables, viewed as types. *)
-val variable_list: variable_kind -> 'a list 
+val variable_list: variable_kind -> 'a list
   -> variable list * ('a * (crterm)) list
 
-(** [variable_list_from_strings f xs] allocates a fresh variable for every 
-  string in the list [xs], and returns both a list of these variables 
-  and an association list that maps elements to variables, viewed as types. 
+(** [variable_list_from_strings f xs] allocates a fresh variable for every
+  string in the list [xs], and returns both a list of these variables
+  and an association list that maps elements to variables, viewed as types.
   The kind is determined using the provided function [f]. *)
-val variable_list_from_names: 
-  (tname -> variable_kind * tname option) -> tname list 
+val variable_list_from_names:
+  (tname -> variable_kind * tname option) -> tname list
   -> variable list * (tname * crterm) list
 
 (** [variable_set xs] allocates a fresh variable for every element in the
     set [xs], and returns both a list of these variables and a map of
     elements to variables. *)
-val variable_set: (tname -> variable_kind * tname option) 
+val variable_set: (tname -> variable_kind * tname option)
   -> StringSet.t -> variable list * (crterm * position) StringMap.t
 
 (** [is_rigid v] returns true if [v] is a constant or rigid variable. *)
@@ -130,8 +130,8 @@ val is_rigid : variable -> bool
 (** [is_flexible v] returns true if [v] is a flexible variable. *)
 val is_flexible : variable -> bool
 
-(** {3 Pool management} 
-    The variables are also partitioned into distinct pools. The variable 
+(** {3 Pool management}
+    The variables are also partitioned into distinct pools. The variable
     pools are related to variable binding location. *)
 
 (** [pool] is an abstract type denoting a set of type variables related
@@ -144,7 +144,7 @@ val inhabitants : pool -> variable list
 (** [number p] returns the rank of a [p]. *)
 val number : pool -> int
 
-(** [new_pool p] introduces a new pool with a rank equals to the one of 
+(** [new_pool p] introduces a new pool with a rank equals to the one of
     [p] + 1. *)
 val new_pool : pool -> pool
 
@@ -155,14 +155,14 @@ val init : unit -> pool
     rank of [v]. *)
 val register : pool -> variable -> unit
 
-(** [introduce p v] registers [v] into [p] and updates its rank 
+(** [introduce p v] registers [v] into [p] and updates its rank
     accordingly. *)
 val introduce : pool -> variable -> unit
 
 (** [instance p v] returns a valid instance of [v]. *)
 val instance : pool -> variable -> variable
 
-(** [chop p t] introduces [t] into [p] by registering a variable into [p] 
+(** [chop p t] introduces [t] into [p] by registering a variable into [p]
     for each node of its tree maintaining its structure using links between
     these variables. *)
 val chop : pool -> crterm -> variable

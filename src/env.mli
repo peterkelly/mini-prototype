@@ -22,9 +22,9 @@
 (* $Id: env.mli 421 2006-12-22 09:27:42Z regisgia $ *)
 
 (** Environment who maps keys whose type is ['a] to values of type ['b]. *)
-type ('a, 'b) t 
+type ('a, 'b) t
 
-(** [lookup env k] returns the value associated to [k] 
+(** [lookup env k] returns the value associated to [k]
     or raises [Not_found]. *)
 val lookup : ('a, 'b) t -> 'a -> 'b
 

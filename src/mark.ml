@@ -37,4 +37,3 @@ let same =
 
 let none =
   fresh()
-

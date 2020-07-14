@@ -30,11 +30,11 @@ type lname = LName of string
 (** This module implements the internal representation of terms. *)
 
 module RowLabel : sig
-  
+
   (** This module maintains a global mapping from identifiers to
       abstract ``labels'', which are internally represented as
       integers, and back. *)
-  
+
   type t
 
   (** [compare x y] is a total ordering. It returns a negative integer
@@ -111,23 +111,23 @@ type 'a term =
   | RowUniform of 'a
   | App of 'a * 'a
   | Var of 'a
-      
+
 (** Terms whose parameters are either leaves of type ['a], or terms.
     [arterm] stands for ``abstract recursive term''. *)
 type 'a arterm =
   | TVariable of 'a
   | TTerm of ('a arterm) term
-      
+
 let rec iter f = function
   | RowCons (_, hd, tl) ->
       f hd; f tl
   | RowUniform content ->
       f content
-  | App (l, r) -> 
+  | App (l, r) ->
       f l; f r
-  | Var v -> 
+  | Var v ->
       f v
-      
+
 let rec map f = function
   | RowCons (label, hd, tl) ->
       RowCons (label, f hd, f tl)
@@ -137,14 +137,14 @@ let rec map f = function
       App (f l, f r)
   | Var v ->
       Var (f v)
-      
+
 let rec fold f term accu =
   match term with
     | RowCons (_, hd, tl) ->
 	f hd (f tl accu)
     | RowUniform content ->
 	f content accu
-    | App (l, r) -> 
+    | App (l, r) ->
 	f r (f l accu)
     | Var v ->
 	f v accu
@@ -155,47 +155,47 @@ let rec fold2 f term term' accu =
 	f hd hd' (f tl tl' accu)
     | RowUniform content, RowUniform content' ->
 	f content content' accu
-    | App (l, r), App (l', r') -> 
+    | App (l, r), App (l', r') ->
 	f r r' (f l l' accu)
     | Var v, Var v' ->
 	f v v' accu
     | _ -> failwith "fold2"
-	  
-let app t args = 
+
+let app t args =
   List.fold_left (fun acu x -> TTerm (App (acu, x))) t args
-    
+
 exception InvalidSymbolString of string
-  
+
 exception InvalidSymbolUse of string * int
-  
-let rec change_term_vars c = 
+
+let rec change_term_vars c =
   map (change_arterm_vars c)
-    
-and change_arterm_vars c = 
+
+and change_arterm_vars c =
   function
     | TTerm term -> TTerm (change_term_vars c term)
     | TVariable x -> TVariable (
-	try 
+	try
 	  List.assq x c
 	with Not_found -> x)
-	
-let rec gen_change_term_vars c = 
+
+let rec gen_change_term_vars c =
   map (gen_change_arterm_vars c)
-    
-and gen_change_arterm_vars c = 
+
+and gen_change_arterm_vars c =
     function
       | TTerm term -> TTerm (gen_change_term_vars c term)
       | TVariable x -> (
-	  try 
+	  try
 	    List.assq x c
 	  with Not_found -> TVariable x)
-	  
-let uniform v = 
+
+let uniform v =
   TTerm (RowUniform v)
 
-let rowcons label x y = 
+let rowcons label x y =
   let intern_label = RowLabel.import label in
     TTerm (RowCons (intern_label, x, y))
 
-let n_rowcons typed_labels y = 
+let n_rowcons typed_labels y =
   List.fold_left (fun acu (l, t) -> rowcons l t acu) y typed_labels
