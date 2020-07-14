@@ -1,6 +1,6 @@
 #
 # autoconf input for Objective Caml programs
-# Copyright (C) 2001 Jean-Christophe Filli‚tre
+# Copyright (C) 2001 Jean-Christophe Filli√¢tre
 #   from a first script by Georges Mariano 
 # 
 # This library is free software; you can redistribute it and/or

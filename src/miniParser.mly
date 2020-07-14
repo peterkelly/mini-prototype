@@ -1,7 +1,7 @@
 /**************************************************************************/
 /*  Mini, a type inference engine based on constraint solving.            */
-/*  Copyright (C) 2006. François Pottier, Yann Régis-Gianas               */
-/*  and Didier Rémy.                                                      */
+/*  Copyright (C) 2006. FranÃ§ois Pottier, Yann RÃ©gis-Gianas               */
+/*  and Didier RÃ©my.                                                      */
 /*                                                                        */
 /*  This program is free software; you can redistribute it and/or modify  */
 /*  it under the terms of the GNU General Public License as published by  */
