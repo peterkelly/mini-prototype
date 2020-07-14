@@ -54,17 +54,17 @@ let builtin_env =
     TName "pi" , (false, EnclosedBy ("{", "}"), -1, KArrow (KEmptyRow, KStar), []);
     TName "->" , (true, AssocRight, 0, KArrow (KStar, KArrow (KStar, KStar)), []);
     TName "*"  , (true, NonAssoc, 1, KArrow (KStar, KArrow (KStar, KStar)),
-	  [ (DName "_Tuple", [ TName "a"; TName "b" ],
-	     arrow_type undefined_position (gen_tvar "a")
-	       (arrow_type undefined_position (gen_tvar "b")
-		  (tuple_type2 undefined_position
-		     (gen_tvar "a") (gen_tvar "b"))))
-	  ]);
+          [ (DName "_Tuple", [ TName "a"; TName "b" ],
+             arrow_type undefined_position (gen_tvar "a")
+               (arrow_type undefined_position (gen_tvar "b")
+                  (tuple_type2 undefined_position
+                     (gen_tvar "a") (gen_tvar "b"))))
+          ]);
     TName "int" , (false, NonAssoc, 2, KStar, []);
     TName "char", (false, NonAssoc, 2, KStar, []);
     TName "unit", (false, NonAssoc, 3, KStar,
-	     [ (DName "_Unit", [],
-		TypVar (undefined_position, TName "unit"))])
+             [ (DName "_Unit", [],
+                TypVar (undefined_position, TName "unit"))])
   |]
 
 let get_infix (i, _, _,_,_) =
@@ -83,9 +83,9 @@ let init_builtin_env variable =
   Array.fold_left
     (fun acu (o, (_,_,_,arity, ds)) ->
        (o, (arity,
-	    TVariable (variable ?name:(Some o) ()),
-	    ds
-	   )
+            TVariable (variable ?name:(Some o) ()),
+            ds
+           )
        ) :: acu)
     [] builtin_env
 
@@ -153,8 +153,8 @@ let result_type tenv t =
     if n = 0 then t
     else
       match t with
-	| TTerm (App (TTerm (App (v, t)), u)) when v = a -> chop (n-1) u
-	| u -> assert (n <= 0); u
+        | TTerm (App (TTerm (App (v, t)), u)) when v = a -> chop (n-1) u
+        | u -> assert (n <= 0); u
   in
     chop (-1) t
 

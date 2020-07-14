@@ -48,7 +48,7 @@ let infix (x,y) e1 e2 =
 let seq e1 e2 =
   let pos = joine e1 e2 in
     EBinding (pos, BindValue (pos, [ pos, [],
-				     match_unit (position e1), e1 ]), e2)
+                                     match_unit (position e1), e1 ]), e2)
 
 let fold_pair f ts =
   match ts with
@@ -173,16 +173,16 @@ quantifiers:
 
 quantifier:
   LID                                               { let p, s = $1 in
-							p, TName s }
+                                                        p, TName s }
 ;
 
 attributes:
-  typ						    { [], $1 }
-| attribute SEMI attributes			    { $1 :: (fst $3), snd $3 }
+  typ                                                    { [], $1 }
+| attribute SEMI attributes                            { $1 :: (fst $3), snd $3 }
 ;
 
 attribute:
-  LID COLON typ					    { LName (snd $1), $3 }
+  LID COLON typ                                            { LName (snd $1), $3 }
 ;
 
 typ:
@@ -206,25 +206,25 @@ type10:
 
 star_types:
   type1 STAR star_types                             { $1 :: $3 }
-| type1						    { [ $1 ] }
+| type1                                                    { [ $1 ] }
 ;
 
 type1:
   type0 { $1 }
-| BACKSLASH type0				    { TypRowUniform ($1, $2) }
+| BACKSLASH type0                                    { TypRowUniform ($1, $2) }
 ;
 
 type0:
  type00s
   {
     match $1 with
-	[] -> assert false
+        [] -> assert false
       | [ t ] -> t
       | t :: q ->
-	  TypApp (join (tposition t)
-		    (tlposition q),
-		    t,
-		    q)
+          TypApp (join (tposition t)
+                    (tlposition q),
+                    t,
+                    q)
   }
 | REF type0 { ref_type $1 $2 }
 ;
@@ -234,20 +234,20 @@ type00:
   { TypVar (fst $1, TName (snd $1)) }
 | LBRACE attributes RBRACE
       { let pos = join $1 $3 in
-	TypApp (pos, TypVar (pos, TName "pi"),
-		[ TypRowCons (join $1 $3, fst $2,
-			      snd $2) ])
+        TypApp (pos, TypVar (pos, TName "pi"),
+                [ TypRowCons (join $1 $3, fst $2,
+                              snd $2) ])
       }
 | LPAREN typ RPAREN                                 { $2 }
 | LPAREN typ COMMA types RPAREN                     { tuple_type (join $1 $5)
-							($2 :: $4) }
+                                                        ($2 :: $4) }
 
 ;
 /* TEMPORARY autoriser les 'equations inline dans les types */
 
 type00s:
-type00				            { [ $1 ] }
-| type00 type00s			    { $1 :: $2 }
+type00                                            { [ $1 ] }
+| type00 type00s                            { $1 :: $2 }
 ;
 
 types:
@@ -290,15 +290,15 @@ with the [let forall] construct.
 ;
 
 clauses:
-  clause					    { [ $1 ] }
-| clauses BAR clause				    { $3 :: $1 }
+  clause                                            { [ $1 ] }
+| clauses BAR clause                                    { $3 :: $1 }
 ;
 
 clause:
-  pattern DARROW expression			    { (join
-							 (pposition $1)
-							 (position $3),
-						       $1, $3) }
+  pattern DARROW expression                            { (join
+                                                         (pposition $1)
+                                                         (position $3),
+                                                       $1, $3) }
 ;
 
 expression300:
@@ -323,7 +323,7 @@ expression100:
   expression100 expression0
   {
     match $1 with
-	EDCon (p, k, args) -> EDCon (p, k, args @ [ $2 ])
+        EDCon (p, k, args) -> EDCon (p, k, args @ [ $2 ])
       | _ -> EApp (joine $1 $2, $1, $2)
   }
 | expression50                                      { $1 }
@@ -334,24 +334,24 @@ expression50:
   {
     ERecordAccess (join (position $1) (fst $3), $1, LName (snd $3))
   }
-| expression10					     { $1 }
+| expression10                                             { $1 }
 ;
 
 expression10:
-  expression0					     { $1 }
-| expression0 ASSIGN expression0		     { assign (joine $1 $3)
-							 $1 $3
-						     }
-| BANG expression0				     { deref
-							 (join $1
-							    (position $2))
-							 $2
-						     }
-| REF expression0				     { mkref
-							 (join $1
-							    (position $2))
-							 $2
-						     }
+  expression0                                             { $1 }
+| expression0 ASSIGN expression0                     { assign (joine $1 $3)
+                                                         $1 $3
+                                                     }
+| BANG expression0                                     { deref
+                                                         (join $1
+                                                            (position $2))
+                                                         $2
+                                                     }
+| REF expression0                                     { mkref
+                                                         (join $1
+                                                            (position $2))
+                                                         $2
+                                                     }
 ;
 
 expression0:
@@ -367,31 +367,31 @@ expression0:
 {
   EVar (fst $1, SName (snd $1))
 }
-| ASSERT_FALSE				             { EAssertFalse ($1) }
+| ASSERT_FALSE                                             { EAssertFalse ($1) }
 | INTEGER                                            { EPrimApp
-							 (fst $1,
-							  PIntegerConstant
-							    (snd $1),
-							  []) }
+                                                         (fst $1,
+                                                          PIntegerConstant
+                                                            (snd $1),
+                                                          []) }
 | CHAR                                               { EPrimApp
-							 (fst $1,
-							  PCharConstant
-							    (snd $1),
-							  []) }
+                                                         (fst $1,
+                                                          PCharConstant
+                                                            (snd $1),
+                                                          []) }
 | LBRACE record_bindings RBRACE                      { ERecordExtend (
-							 join $1 $3,
-							 List.rev $2,
-							 ERecordEmpty undefined_position)
-						     }
+                                                         join $1 $3,
+                                                         List.rev $2,
+                                                         ERecordEmpty undefined_position)
+                                                     }
 | LPAREN RPAREN                                      { EPrimApp (
-							 join $1 $2,
-							 PUnit,
-							 [])
-						     }
+                                                         join $1 $2,
+                                                         PUnit,
+                                                         [])
+                                                     }
 | LPAREN expression RPAREN                           { $2 }
 | LPAREN expression error
       {
-	unclosed "(" ")" 1 3
+        unclosed "(" ")" 1 3
       }
 
 | LPAREN expression COLON typ RPAREN
@@ -426,16 +426,16 @@ binding:
     BindValue (join $1 (vlposition $2), $2)
   }
 | LET REC value_definitions                          { BindRecValue
-							 (join $1 (vlposition $3),
-							  $3) }
-| TYPE type_definitions				     { TypeDec (join $1 (tdlposition $2),
-								$2) }
+                                                         (join $1 (vlposition $3),
+                                                          $3) }
+| TYPE type_definitions                                     { TypeDec (join $1 (tdlposition $2),
+                                                                $2) }
 ;
 
 
 type_definitions:
-type_definition					     { [ $1 ] }
-| type_definitions AND type_definition		     { $3 :: $1 }
+type_definition                                             { [ $1 ] }
+| type_definitions AND type_definition                     { $3 :: $1 }
 ;
 
 type_definition:
@@ -444,7 +444,7 @@ type_definition:
     let alphas = snd (List.split $5) in
     let dcon =
       List.map (fun (pos, lid, vars, ty) ->
-		(pos, lid, alphas @ vars, ty))
+                (pos, lid, alphas @ vars, ty))
       $6
     in
       (fst $1, snd $3, TName (snd $1), DAlgebraic dcon)
@@ -464,7 +464,7 @@ kind0: STAR { ($1, KStar) }
 ;
 
 algebraic_datatype_definitions:
-  algebraic_datatype_definition			     { [ $1 ] }
+  algebraic_datatype_definition                             { [ $1 ] }
 | algebraic_datatype_definition BAR algebraic_datatype_definitions { $1 :: $3 }
 ;
 
@@ -485,19 +485,19 @@ value_definitions:
 
 value_definition:
   forall pattern0 equal_expression                    { (position $3,
-							 snd (List.split $1),
-							 $2, $3) }
+                                                         snd (List.split $1),
+                                                         $2, $3) }
 ;
 
 equal_expression:
   EQUAL expression                                    { $2 }
 | COLON typ EQUAL expression
       { ETypeConstraint
-	  (join $1 (position $4), $4, $2) }
+          (join $1 (position $4), $4, $2) }
 | pattern0 equal_expression                           { ELambda
-							  (join
-							     (pposition $1)
-							     (position $2), $1, $2) }
+                                                          (join
+                                                             (pposition $1)
+                                                             (position $2), $1, $2) }
 ;
 
 pattern:
@@ -508,9 +508,9 @@ pattern3:
   pattern2                                             { $1 }
 | pattern3 COLON typ
       { PTypeConstraint
-	  (join
-	     (pposition $1)
-	     (tposition $3), $1, $3)
+          (join
+             (pposition $1)
+             (tposition $3), $1, $3)
       }
 ;
 
@@ -523,9 +523,9 @@ pattern2:
 ;
 
 pattern1:
-  pattern10					       { $1 }
-| pattern10 BAR pattern1				       { POr (pjoin $1 $3, [$1 ; $3]) }
-| pattern10 ANDC pattern1			       { PAnd (pjoin $1 $3,[$1; $3]) }
+  pattern10                                               { $1 }
+| pattern10 BAR pattern1                                       { POr (pjoin $1 $3, [$1 ; $3]) }
+| pattern10 ANDC pattern1                               { PAnd (pjoin $1 $3,[$1; $3]) }
 ;
 
 pattern10:
@@ -547,16 +547,16 @@ pattern0:
 }
 | WILD                                                  { PWildcard $1 }
 | INTEGER                                        { let pos = fst $1
-						   and value = snd $1 in
-						     PPrimitive
-						     (pos,
-						      PIntegerConstant value) }
+                                                   and value = snd $1 in
+                                                     PPrimitive
+                                                     (pos,
+                                                      PIntegerConstant value) }
 | CHAR                                        { let pos = fst $1
-						   and value = snd $1 in
-						     PPrimitive
-						     (pos,
-						      PCharConstant value)
-						 }
+                                                   and value = snd $1 in
+                                                     PPrimitive
+                                                     (pos,
+                                                      PCharConstant value)
+                                                 }
 | LPAREN RPAREN                                         { match_unit $1 }
 /* { tuple_pat (join $1 $2) [] } */
 | LPAREN pattern RPAREN                                 { $2 }
@@ -571,6 +571,6 @@ patterns:
 ;
 
 pattern1s:
-  pattern0						{ [ $1 ] }
-| pattern0 pattern1s					{ $1 :: $2 }
+  pattern0                                                { [ $1 ] }
+| pattern0 pattern1s                                        { $1 :: $2 }
 ;

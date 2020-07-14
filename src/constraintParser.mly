@@ -66,9 +66,9 @@ let cexists pos vars c =
     let rqs, fqs, tenv = MiniTypes.intern_let_env pos tenv [] vars in
     CLet ([
       Scheme (pos, rqs, fqs, c (tenv, pool),
-	      Misc.StringMap.empty
-	     )
-	  ], CTrue pos)
+              Misc.StringMap.empty
+             )
+          ], CTrue pos)
 
 let cequation t1 t2 =
   fun (tenv, pool) ->
@@ -164,21 +164,21 @@ tconstraint: constraint_exp EOF { $1 }
 
 constraint_exp:
   LET let_envs IN constraint_exp        { clet $2 $4 }
-| EXISTS vars DOT constraint_exp	{ cexists $1 $2 $4 }
+| EXISTS vars DOT constraint_exp        { cexists $1 $2 $4 }
 | constraint_exp1 { $1 }
 ;
 
 constraint_exp1:
- conjunction				{ conjunction $1 }
+ conjunction                                { conjunction $1 }
 | constraint_exp0 { $1 }
 ;
 
 constraint_exp0:
-| TRUE				        { fun _ -> CTrue $1 }
-| DUMP					{ fun _ -> CDump $1 }
-| typ EQ typ				{ cequation $1 $3 }
-| LID LESS typ				{ cinstance $1 $3 }
-| LPAREN constraint_exp RPAREN		{ $2 }
+| TRUE                                        { fun _ -> CTrue $1 }
+| DUMP                                        { fun _ -> CDump $1 }
+| typ EQ typ                                { cequation $1 $3 }
+| LID LESS typ                                { cinstance $1 $3 }
+| LPAREN constraint_exp RPAREN                { $2 }
 ;
 
 let_env:
@@ -189,23 +189,23 @@ let_env:
 ;
 
 let_envs:
-let_env					 { fun p -> [ $1 p ] }
-| let_env SEMI let_envs			 { fun p -> ($1 p) :: ($3 p) }
+let_env                                         { fun p -> [ $1 p ] }
+| let_env SEMI let_envs                         { fun p -> ($1 p) :: ($3 p) }
 ;
 
 opt_env_vars:
-  /* empty */				 { ([], []) }
-| FORALL LBRACE vars RBRACE opt_vars		 { (snd (List.split $3),
-					     (snd (List.split $5))) }
-| FORALL vars		 { ([], (snd (List.split $2))) }
+  /* empty */                                 { ([], []) }
+| FORALL LBRACE vars RBRACE opt_vars                 { (snd (List.split $3),
+                                             (snd (List.split $5))) }
+| FORALL vars                 { ([], (snd (List.split $2))) }
 ;
 
 opt_vars: /* empty */ { [] }
 | vars { $1 }
 ;
 
-vars: var				 { [ $1 ] }
-| var vars				 { $1 :: $2 }
+vars: var                                 { [ $1 ] }
+| var vars                                 { $1 :: $2 }
 ;
 
 var: LID { let p, n = $1 in p, TName n }
@@ -220,11 +220,11 @@ opt_constraint:
 ;
 
 opt_env_ids:
-  /* empty */				 { [] }
-| LPAREN env_ids RPAREN			 { $2 }
+  /* empty */                                 { [] }
+| LPAREN env_ids RPAREN                         { $2 }
 ;
 
-env_id: LID COLON typ			 { (snd $1, $3) }
+env_id: LID COLON typ                         { (snd $1, $3) }
 ;
 
 env_ids: env_id
@@ -238,12 +238,12 @@ conjunction: constraint_exp0 AND constraint_exp0 { [ $1; $3  ] }
 ;
 
 attributes:
-  typ						    { [], $1 }
-| attribute SEMI attributes			    { $1 :: (fst $3), snd $3 }
+  typ                                                    { [], $1 }
+| attribute SEMI attributes                            { $1 :: (fst $3), snd $3 }
 ;
 
 attribute:
-  LID COLON typ					    { LName (snd $1), $3 }
+  LID COLON typ                                            { LName (snd $1), $3 }
 ;
 
 typ:
@@ -267,25 +267,25 @@ type10:
 
 star_types:
   type1 TIMES star_types                             { $1 :: $3 }
-| type1						    { [ $1 ] }
+| type1                                                    { [ $1 ] }
 ;
 
 type1:
   type0 { $1 }
-| BACKSLASH type0				    { TypRowUniform ($1, $2) }
+| BACKSLASH type0                                    { TypRowUniform ($1, $2) }
 ;
 
 type0:
  type00s
   {
     match $1 with
-	[] -> assert false
+        [] -> assert false
       | [ t ] -> t
       | t :: q ->
-	  TypApp (join (tposition t)
-		    (tlposition q),
-		    t,
-		    q)
+          TypApp (join (tposition t)
+                    (tlposition q),
+                    t,
+                    q)
   }
 ;
 
@@ -300,14 +300,14 @@ type00:
 }
 | LPAREN typ RPAREN                                 { $2 }
 | LPAREN typ COMMA types RPAREN                     { tuple_type (join $1 $5)
-							($2 :: $4) }
+                                                        ($2 :: $4) }
 
 ;
 /* TEMPORARY autoriser les 'equations inline dans les types */
 
 type00s:
-type00				            { [ $1 ] }
-| type00 type00s			    { $1 :: $2 }
+type00                                            { [ $1 ] }
+| type00 type00s                            { $1 :: $2 }
 ;
 
 types:

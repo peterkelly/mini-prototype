@@ -35,7 +35,7 @@ sig
 
   val union: t -> t -> t
     (** [union] returns the union of two sets, which may safely be assumed
-	disjoint. *)
+        disjoint. *)
 
   val inter: t -> t -> t
     (** [inter] returns the intersection of two sets. *)

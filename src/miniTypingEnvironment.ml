@@ -131,7 +131,7 @@ let as_kind_env env =
   let read id =
     try
       match Env.lookup (!env).type_info id with
-	| (k, _, _) -> k
+        | (k, _, _) -> k
     with Not_found ->
       raise (UnboundTypeConstructor (undefined_position, id))
   in
@@ -170,8 +170,8 @@ let is_typcon env t =
     a name already used by a type constructor. *)
 let filter_tycon_name tenv =
   List.filter (notf (function v -> match variable_name v with
-			 None -> false
-		       | Some name -> is_typcon tenv name))
+                         None -> false
+                       | Some name -> is_typcon tenv name))
 
 let add_type_and_kind_variables denv tenv =
   add_type_variables
@@ -198,11 +198,11 @@ let lookup_datacon ?pos env k =
 
 let rigid_args rt =
   List.fold_left (fun acu ->
-	    function
-		TVariable v ->
-		  if (UnionFind.find v).kind = Rigid then v :: acu
-		  else acu
-	      | _ -> acu) []
+            function
+                TVariable v ->
+                  if (UnionFind.find v).kind = Rigid then v :: acu
+                  else acu
+              | _ -> acu) []
     (tycon_args rt)
 
 
@@ -228,11 +228,11 @@ let is_regular_datacon_scheme tenv kvars kt =
 let rec find_algebraic_datatypes env k =
   let ts = Env.filter env.type_info
     (fun (_, _, r) -> match !r with
-	 Some l -> List.mem k l
+         Some l -> List.mem k l
        | _ -> false)
   in
     match ts with
-	[ (_,_, r) ] -> unSome (!r)
+        [ (_,_, r) ] -> unSome (!r)
       | _ -> assert false
 
 (** [fresh_vars kind pos env vars] allocates fresh variables from a
@@ -256,5 +256,5 @@ let fresh_unnamed_rigid_vars pos env vars =
   let rqs, denv = variable_list Rigid vars in
     rqs,
   List.map (function (n, TVariable v) -> (n, (fresh_kind (), v, ref None))
-	    | _ -> assert false)
+            | _ -> assert false)
     denv

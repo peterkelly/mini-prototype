@@ -51,9 +51,9 @@ module RowLabel : sig
     val import: lname -> t
 
     (** [export i] provides access to the inverse of the global mapping,
-	that is, associates a unique identifier with every label. The
-	identifier associated with a label is the one originally supplied
-	to [import]. *)
+        that is, associates a unique identifier with every label. The
+        identifier associated with a label is the one originally supplied
+        to [import]. *)
     val export: t -> lname
 
   end = struct
@@ -64,12 +64,12 @@ module RowLabel : sig
     let compare = (-)
 
     (** A hash table maps all known identifiers to integer values. It
-	provides one direction of the global mapping. *)
+        provides one direction of the global mapping. *)
     let table =
       Hashtbl.create 1023
 
     (** An infinite array maps all known integer values to identifiers. It
-	provides the other direction of the global mapping. *)
+        provides the other direction of the global mapping. *)
     let array =
       InfiniteArray.make "<BUG>" (* Dummy data. *)
 
@@ -78,25 +78,25 @@ module RowLabel : sig
       ref 0
 
     (** [import s] associates a unique label with the identifier [s],
-	possibly extending the global mapping if [s] was never encountered
-	so far. Thus, if [s] and [t] are equal strings, possibly allocated
-	in different memory locations, [import s] and [import t] return
-	the same label. The identifier [s] is recorded and may be later
-	recovered via [export]. *)
+        possibly extending the global mapping if [s] was never encountered
+        so far. Thus, if [s] and [t] are equal strings, possibly allocated
+        in different memory locations, [import s] and [import t] return
+        the same label. The identifier [s] is recorded and may be later
+        recovered via [export]. *)
     let import (LName s) =
       try
-	Hashtbl.find table s
+        Hashtbl.find table s
       with Not_found ->
-	let i = !counter in
-	  Hashtbl.add table s i;
-	  InfiniteArray.set array i s;
-	  counter := i + 1;
-	  i
+        let i = !counter in
+          Hashtbl.add table s i;
+          InfiniteArray.set array i s;
+          counter := i + 1;
+          i
 
     (** [export i] provides access to the inverse of the global mapping,
-	that is, associates a unique identifier with every label. The
-	identifier associated with a label is the one originally supplied
-	to [import]. *)
+        that is, associates a unique identifier with every label. The
+        identifier associated with a label is the one originally supplied
+        to [import]. *)
     let export i =
       assert (i < !counter);
       LName (InfiniteArray.get array i)
@@ -141,24 +141,24 @@ let rec map f = function
 let rec fold f term accu =
   match term with
     | RowCons (_, hd, tl) ->
-	f hd (f tl accu)
+        f hd (f tl accu)
     | RowUniform content ->
-	f content accu
+        f content accu
     | App (l, r) ->
-	f r (f l accu)
+        f r (f l accu)
     | Var v ->
-	f v accu
+        f v accu
 
 let rec fold2 f term term' accu =
   match term, term' with
     | RowCons (_, hd, tl), RowCons (_, hd', tl') ->
-	f hd hd' (f tl tl' accu)
+        f hd hd' (f tl tl' accu)
     | RowUniform content, RowUniform content' ->
-	f content content' accu
+        f content content' accu
     | App (l, r), App (l', r') ->
-	f r r' (f l l' accu)
+        f r r' (f l l' accu)
     | Var v, Var v' ->
-	f v v' accu
+        f v v' accu
     | _ -> failwith "fold2"
 
 let app t args =
@@ -175,9 +175,9 @@ and change_arterm_vars c =
   function
     | TTerm term -> TTerm (change_term_vars c term)
     | TVariable x -> TVariable (
-	try
-	  List.assq x c
-	with Not_found -> x)
+        try
+          List.assq x c
+        with Not_found -> x)
 
 let rec gen_change_term_vars c =
   map (gen_change_arterm_vars c)
@@ -186,9 +186,9 @@ and gen_change_arterm_vars c =
     function
       | TTerm term -> TTerm (gen_change_term_vars c term)
       | TVariable x -> (
-	  try
-	    List.assq x c
-	  with Not_found -> TVariable x)
+          try
+            List.assq x c
+          with Not_found -> TVariable x)
 
 let uniform v =
   TTerm (RowUniform v)

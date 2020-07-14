@@ -53,7 +53,7 @@ let register_tasks term_printer =
     solve_constraint_task
     ([], ignore)
     [ [ MiniInfer.generate_constraint_task;
-	MiniSyntacticAnalysis.parse_constraint_task ] ]
+        MiniSyntacticAnalysis.parse_constraint_task ] ]
     (fun t -> solve_constraint (List.hd t))
     (const true);
 

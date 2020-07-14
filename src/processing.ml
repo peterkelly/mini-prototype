@@ -51,7 +51,7 @@ type task =
       name       : task_name;
       options    : options;
       depends_on : task_name list list;
-      process	 : process;
+      process         : process;
       is_filled  : unit -> bool
     }
 
@@ -81,28 +81,28 @@ let register tname ((opts, af) as options) deps process is_filled =
   (* Check that tname is not already used. *)
   if is_registered tname then
     failwith ("Task registration problem: "^tname
-	      ^" is already registered")
+              ^" is already registered")
 
   (* Check that dependencies are met. *)
   else if (List.exists (List.exists (notf is_registered)) deps) then
     failwith ("Task registration problem: the dependencies cannot be met for "
-	      ^ tname ^".")
+              ^ tname ^".")
 
   (* This registration is consistent. *)
   else
       Hashtbl.add registered_tasks tname
-	{
-	  name       = tname;
-	  options    = options;
-	  depends_on = deps;
-	  process    =
-	    {
-	      input_type  = deps;
-	      output_type = tname;
-	      code        = as_process_code tname deps process
-	    };
-	  is_filled  = is_filled
-	}
+        {
+          name       = tname;
+          options    = options;
+          depends_on = deps;
+          process    =
+            {
+              input_type  = deps;
+              output_type = tname;
+              code        = as_process_code tname deps process
+            };
+          is_filled  = is_filled
+        }
 
 (** {2 Processing} *)
 
@@ -113,19 +113,19 @@ let rec needed_tasks_until stopper tasks tname =
   let rec try_tasks tasks = function
     | [] -> raise Not_found
     | t :: ts ->
-	try
-	  needed_tasks_until stopper (t :: tasks) t
-	with Not_found -> try_tasks tasks ts
+        try
+          needed_tasks_until stopper (t :: tasks) t
+        with Not_found -> try_tasks tasks ts
   in
   if tname = stopper then tasks
   else
     let deps = deps tname in
       (* If a task has no deps, it should be an initial task. *)
       if deps = [] then
-	raise Not_found
+        raise Not_found
       else
-	let ts = List.fold_left try_tasks tasks deps in
-	  ts
+        let ts = List.fold_left try_tasks tasks deps in
+          ts
 
 let debug_flag = ref false
 
@@ -185,8 +185,8 @@ let trace_option tname =
 let options tstart tend =
   let options, afs =
     Hashtbl.fold (fun tname t (opts, afs) ->
-		    (trace_option tname :: fst t.options @ opts,
-		     snd t.options :: afs))
+                    (trace_option tname :: fst t.options @ opts,
+                     snd t.options :: afs))
       registered_tasks
       ([], [])
   in
@@ -208,37 +208,37 @@ let options_analysis default_tstart default_tend usage =
 let execute_tasks options usage tstart tend =
     if not (is_registered tend) then
       begin
-	Arg.usage options usage;
-	failwith (tend ^ " has not been registered.")
+        Arg.usage options usage;
+        failwith (tend ^ " has not been registered.")
       end
     else if not (is_valid_initial_task tstart) then
       begin
-	Arg.usage options usage;
-	if not (is_registered tstart) then
-	  failwith (tstart ^ " is not a valid initial task.")
-	else (
-	  Printf.printf "%s is waiting for arguments.\n" tstart;
-	  exit 0
-	)
+        Arg.usage options usage;
+        if not (is_registered tstart) then
+          failwith (tstart ^ " is not a valid initial task.")
+        else (
+          Printf.printf "%s is waiting for arguments.\n" tstart;
+          exit 0
+        )
       end
     else
       let ntasks = needed_tasks_until tstart [] tend @ [ tend ] in
       let ntasks_with_todo = add_wanted_tasks ntasks in
       let rec find_first r = function
-	| [] -> assert false
-	| t :: ts ->
-	    try StringMap.find t r with Not_found -> find_first r ts
+        | [] -> assert false
+        | t :: ts ->
+            try StringMap.find t r with Not_found -> find_first r ts
       in
-	List.fold_left
-	  (fun r t ->
-	     current_task := t;
-	     debug ("Processing: "^t);
-	     let input_type = (task t).process.input_type in
-	     let args = List.map (find_first r) input_type in
-	       StringMap.add t
-		 (snd ((task t).process.code (input_type, args))) r)
-	  StringMap.empty
-	  ntasks_with_todo
+        List.fold_left
+          (fun r t ->
+             current_task := t;
+             debug ("Processing: "^t);
+             let input_type = (task t).process.input_type in
+             let args = List.map (find_first r) input_type in
+               StringMap.add t
+                 (snd ((task t).process.code (input_type, args))) r)
+          StringMap.empty
+          ntasks_with_todo
 
 let execute ~default_start ~default_end ~usage =
   let options, tstart, tend = options_analysis default_start default_end usage

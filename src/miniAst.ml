@@ -78,9 +78,9 @@ and lname =
 
 (** Constant. *)
 and primitive =
-  | PIntegerConstant of int	(** Integer constant. *)
-  | PCharConstant of char	(** Character constant. *)
-  | PUnit			(** Unit constant. *)
+  | PIntegerConstant of int        (** Integer constant. *)
+  | PCharConstant of char        (** Character constant. *)
+  | PUnit                        (** Unit constant. *)
 
 (** Pattern matching clause. *)
 and clause =

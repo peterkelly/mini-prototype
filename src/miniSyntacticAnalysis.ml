@@ -64,8 +64,8 @@ let parse_constraint_from_channel filename lexer =
     (* And parse the token stream. *)
     try
       let c, env = MiniInfer.init_env () in
-	c (ConstraintParser.tconstraint ConstraintLexer.token lexer
-	(env, MultiEquation.init ()))
+        c (ConstraintParser.tconstraint ConstraintLexer.token lexer
+        (env, MultiEquation.init ()))
     with Parsing.Parse_error -> raise (Other lexer)
 
 let parse_constraint_file () =

@@ -81,8 +81,8 @@ let rec expand_term_in_depth t =
   let expand v =
     let desc = UnionFind.find v in
       match desc.structure with
-	| None -> TVariable v
-	| Some t -> expand_term_in_depth t
+        | None -> TVariable v
+        | Some t -> expand_term_in_depth t
   in
     TTerm (map expand t)
 
@@ -133,9 +133,9 @@ let (^) c1 c2 =
     | c, CTrue _ ->
       c
     | c, CConjunction cl ->
-	CConjunction (c :: cl)
+        CConjunction (c :: cl)
     | _, _ ->
-	CConjunction [c1; c2]
+        CConjunction [c1; c2]
 
 let conj cs =
   List.fold_left ( ^ ) (CTrue undefined_position) cs
@@ -145,14 +145,14 @@ let conj cs =
    general. *)
 let ex ?pos qs c =
   CLet ([ Scheme (pos_or_undef pos, [], qs, c, StringMap.empty) ],
-	CTrue (pos_or_undef pos))
+        CTrue (pos_or_undef pos))
 
 (** [fl qs c] returns the constraint [forall qs.c]. We encode universal
    constraints in terms of [let] constraints, since the latter are more
    general. *)
 let fl ?pos qs c =
   CLet ([ Scheme (pos_or_undef pos, qs, [], c, StringMap.empty) ],
-	CTrue (pos_or_undef pos))
+        CTrue (pos_or_undef pos))
 
 (** [exists f] creates a fresh variable [v] and returns the constraint
     [exists v.(f v)]. *)
@@ -177,9 +177,9 @@ let exists_list ?pos l f =
 let forall_list ?pos l f =
   let l, m =
     List.fold_right (fun x (vs, xts) ->
-		       let v = variable Rigid ~name:x () in
-			 v :: vs, (x, TVariable v) :: xts
-		    ) l ([], [])
+                       let v = variable Rigid ~name:x () in
+                         v :: vs, (x, TVariable v) :: xts
+                    ) l ([], [])
   in
   fl ~pos:(pos_or_undef pos) l (f m)
 

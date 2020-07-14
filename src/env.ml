@@ -31,13 +31,13 @@ type ('a, 'b) t = ('a * 'b) list
 let filtered_lookup pred =
   let rec chop = function
     | [] ->
-	None
+        None
 
     | (a,_) :: q when pred a ->
-	Some a
+        Some a
 
     | (a,_) :: q ->
-	chop q
+        chop q
   in chop
 
 let exists =

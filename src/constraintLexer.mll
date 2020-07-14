@@ -45,8 +45,8 @@ let fail lexbuf message =
 let table =
   let t = Hashtbl.create 149 in
     List.iter (fun (keyword, token) ->
-		 Hashtbl.add t keyword token
-	      ) [
+                 Hashtbl.add t keyword token
+              ) [
     "let", (fun x -> LET x);
     "in", (fun x -> IN x);
     "and", (fun x -> AND x);
@@ -104,12 +104,12 @@ let bin_literal =
 
 rule token = parse
   | newline { let pos = lexbuf.lex_curr_p in
-		lexbuf.lex_curr_p <-
-		{ pos with
-		    pos_lnum = pos.pos_lnum + 1;
-		    pos_bol  = pos.pos_cnum;
-		};
-		token lexbuf }
+                lexbuf.lex_curr_p <-
+                { pos with
+                    pos_lnum = pos.pos_lnum + 1;
+                    pos_bol  = pos.pos_cnum;
+                };
+                token lexbuf }
   | blank +
             { token lexbuf }
   | forall  { FORALL (cpos lexbuf) }
@@ -124,15 +124,15 @@ rule token = parse
   | "<"     { LESS (cpos lexbuf)  }
   | "("     { LPAREN (cpos lexbuf)  }
   | ")"     { RPAREN (cpos lexbuf)  }
-  | "["	    { LBRACKET (cpos lexbuf)  }
+  | "["            { LBRACKET (cpos lexbuf)  }
   | "]"     { RBRACKET (cpos lexbuf)  }
-  | "{"	    { LBRACE (cpos lexbuf)  }
+  | "{"            { LBRACE (cpos lexbuf)  }
   | "}"     { RBRACE (cpos lexbuf)  }
   | "\\"    { BACKSLASH (cpos lexbuf)  }
-  | "*"	    { TIMES (cpos lexbuf) }
+  | "*"            { TIMES (cpos lexbuf) }
   | "->"    { ARROW (cpos lexbuf)  }
   | "="     { EQ (cpos lexbuf)  }
-  | ";"	    { SEMI (cpos lexbuf) }
+  | ";"            { SEMI (cpos lexbuf) }
   | ":"     { COLON (cpos lexbuf)  }
   | eof     { EOF (cpos lexbuf) }
   | _       { fail lexbuf ("Illegal character"^Lexing.lexeme lexbuf) }
@@ -146,11 +146,11 @@ and comment = parse
             { fail lexbuf "Unterminated comment" }
 
   | newline { let pos = lexbuf.lex_curr_p in
-		lexbuf.lex_curr_p <-
-		{ pos with
-		    pos_lnum = pos.pos_lnum + 1;
-		    pos_bol  = pos.pos_cnum;
-		};
-		comment lexbuf }
+                lexbuf.lex_curr_p <-
+                { pos with
+                    pos_lnum = pos.pos_lnum + 1;
+                    pos_bol  = pos.pos_cnum;
+                };
+                comment lexbuf }
   | _
             { comment lexbuf }

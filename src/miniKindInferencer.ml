@@ -33,9 +33,9 @@ open Misc
 module Ast = MiniAst
 
 module IdSet = Set.Make (struct
-			   type t = string
-			   let compare = compare
-			 end)
+                           type t = string
+                           let compare = compare
+                         end)
 
 module RowDomain = BasicSetEquations.Make (struct
 
@@ -43,12 +43,12 @@ module RowDomain = BasicSetEquations.Make (struct
 
     let print s =
       try
-	let label = choose s in
-	fold (fun label accu ->
-	  label ^ "+" ^ accu
+        let label = choose s in
+        fold (fun label accu ->
+          label ^ "+" ^ accu
         ) (remove label s) label
       with Not_found ->
-	""
+        ""
 
   end)
 
@@ -148,14 +148,14 @@ let rec kind_arity env v =
   let arrow_sym = symbol env arrow in
     match (UnionFind.find v).structure with
       | None ->
-	  if is_star env v then 0
-	  else
-	    assert false
+          if is_star env v then 0
+          else
+            assert false
       | Some t ->
-	  (match t with
-	     | App (s, k) when s = arrow_sym -> 1 + kind_arity env k
-	     | App (k, _) -> kind_arity env k
-	     | _ -> 0)
+          (match t with
+             | App (s, k) when s = arrow_sym -> 1 + kind_arity env k
+             | App (k, _) -> kind_arity env k
+             | _ -> 0)
 
 let rec print_term = function
   | App (v1, v2) -> String.concat "" [ "(" ; print v1 ; "," ; print v2 ; ")" ]
@@ -210,25 +210,25 @@ let rec unify pos k1 k2 =
     match structure k1, structure k2 with
 
       | None, None ->
-	  if (is_constant k1 && is_constant k2 && name k1 <> name k2) then
-	    raise (KindError pos);
-	  assign_point k1 k2
+          if (is_constant k1 && is_constant k2 && name k1 <> name k2) then
+            raise (KindError pos);
+          assign_point k1 k2
 
       | (None, _ | _, None) when is_constant k1 || is_constant k2 ->
-	  raise (KindError pos)
+          raise (KindError pos)
 
       | None, _ ->
-	  assign pos k1 k2
+          assign pos k1 k2
 
       | _, None ->
-	  assign pos k2 k1
+          assign pos k2 k1
 
       | Some (App (t1, t2)), Some (App (t1', t2')) ->
-	  unify pos t1 t1';
-	  unify pos t2 t2'
+          unify pos t1 t1';
+          unify pos t2 t2'
 
       | Some (Row d1), Some (Row d2) ->
-	  RowDomain.unify d1 d2
+          RowDomain.unify d1 d2
 
       | _ -> assert false)
 
@@ -236,33 +236,33 @@ let rec unify pos k1 k2 =
 let rec infer env t =
   match t with
       TypVar (p, id) ->
-	lookup id env
+        lookup id env
 
     | TypApp (p, tc, ts) ->
-	let k = variable () in
-	let kd =
-	  List.fold_right (fun t acu -> mkarrow (infer env t) acu)
-	    ts k
+        let k = variable () in
+        let kd =
+          List.fold_right (fun t acu -> mkarrow (infer env t) acu)
+            ts k
 
-	in
-	  unify p (infer env tc) kd;
-	  k
+        in
+          unify p (infer env tc) kd;
+          k
 
     | TypRowCons (p, attributes, t) ->
-	List.iter (fun (_,ta) -> check p env ta star) attributes;
-	let defined_labels =
-	  List.fold_left
-	    (fun acu (LName l,_) ->
-	       if IdSet.mem l acu then raise (MultipleLabels (p, LName l))
-	       else IdSet.add l acu)
-	    IdSet.empty
-	    attributes in
-	let domain = RowDomain.svariable () in
-	  check p env t (row (RowDomain.sum defined_labels domain));
-	  row domain
+        List.iter (fun (_,ta) -> check p env ta star) attributes;
+        let defined_labels =
+          List.fold_left
+            (fun acu (LName l,_) ->
+               if IdSet.mem l acu then raise (MultipleLabels (p, LName l))
+               else IdSet.add l acu)
+            IdSet.empty
+            attributes in
+        let domain = RowDomain.svariable () in
+          check p env t (row (RowDomain.sum defined_labels domain));
+          row domain
 
     | TypRowUniform (p, typ) ->
-	row (RowDomain.svariable ())
+        row (RowDomain.svariable ())
 
 and check pos env t k =
   unify pos (infer env t) k

@@ -83,11 +83,11 @@ let print_separated_list separator print_elem xs =
 
   let rec loop x = function
     | [] ->
-	print_elem x
+        print_elem x
     | y :: xs ->
-	print_elem x ^
-	separator ^
-	loop y xs
+        print_elem x ^
+        separator ^
+        loop y xs
   in
 
   match xs with
@@ -204,16 +204,16 @@ let unSome = function
 let unSomef f = fun x -> unSome (f x)
 
 let split3 l = List.fold_left (fun (l1,l2,l3) (a, b, c) -> a::l1, b::l2, c::l3)
-	       ([], [], []) l
+               ([], [], []) l
 
 let split4 l = List.fold_left
-		 (fun (l1,l2,l3,l4) (a, b, c, d) -> a::l1, b::l2, c::l3, d::l4)
-	       ([], [], [], []) l
+                 (fun (l1,l2,l3,l4) (a, b, c, d) -> a::l1, b::l2, c::l3, d::l4)
+               ([], [], [], []) l
 
 let split5 l =
   List.fold_left
     (fun (l1,l2,l3,l4,l5) (a, b, c, d, e) -> a::l1, b::l2, c::l3, d::l4, e::l5)
-	       ([], [], [], [], []) l
+               ([], [], [], [], []) l
 
 let rec transpose l =
   match l with
@@ -221,7 +221,7 @@ let rec transpose l =
     | [] :: _ -> []
     | [ a ] :: _ -> [ List.map List.hd l ]
     | _ -> let hs, ts =
-	List.split (List.map (function l -> List.hd l, List.tl l) l)
+        List.split (List.map (function l -> List.hd l, List.tl l) l)
       in hs :: transpose ts
 
 let list_unionq l1 =
@@ -282,7 +282,7 @@ let rec gcombine l r =
     | [], r -> [], [], r
     | a :: q, [] -> [], l, []
     | a :: p, b :: q -> let g, rl, rr = gcombine p q in
-	(a, b) :: g, rl, rr
+        (a, b) :: g, rl, rr
 
 (* FIXME: optimize. *)
 let list_map_array f l =
@@ -341,7 +341,7 @@ let list_existsi f =
 let list_mapi2 f =
   let rec loop i l1 l2 =
     match (l1, l2) with
-	[], [] -> []
+        [], [] -> []
       | r :: rs, q :: qs -> f i r q :: (loop (i+1) rs qs)
       | _ -> failwith "Invalid arguments for mapi2"
   in
@@ -357,7 +357,7 @@ let all_equal l =
   let rec fold acu = function
       [] -> true, acu
     | x :: q -> (match acu with
-		     None -> fold (Some x) q
-		   | Some y -> if x = y then fold acu q else (false, None))
+                     None -> fold (Some x) q
+                   | Some y -> if x = y then fold acu q else (false, None))
   in
     fold None l

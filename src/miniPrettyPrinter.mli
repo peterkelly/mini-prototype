@@ -37,7 +37,7 @@ val print_program       : MiniAst.program -> unit
 
 (** [print_type paren t] pretty-prints [t] according to the active
     printing mode. If [paren] is set, all the parenthesis are shown. *)
-val print_type		: ?paren:bool -> MiniAst.typ -> unit
+val print_type                : ?paren:bool -> MiniAst.typ -> unit
 
 (** Set the active mode. *)
 val active_mode         : PrettyPrinter.mode -> unit

@@ -29,16 +29,16 @@ type output =
   | Buffer of Buffer.t
 
 type formatter_output =
-	{
-	  out: string -> int -> int -> unit;
-	  flush: unit -> unit;
-	  newline: unit -> unit;
-	  spaces: int -> unit;
-	  with_tags: bool;
-	  open_tag : tag -> unit;
-	  close_tag : tag -> unit;
-	  margin: int;
-	}
+        {
+          out: string -> int -> int -> unit;
+          flush: unit -> unit;
+          newline: unit -> unit;
+          spaces: int -> unit;
+          with_tags: bool;
+          open_tag : tag -> unit;
+          close_tag : tag -> unit;
+          margin: int;
+        }
 
 type mode =
       Latex of output

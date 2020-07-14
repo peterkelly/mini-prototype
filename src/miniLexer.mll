@@ -45,8 +45,8 @@ let fail lexbuf message =
 let table =
   let t = Hashtbl.create 149 in
     List.iter (fun (keyword, token) ->
-		 Hashtbl.add t keyword token
-	      ) [
+                 Hashtbl.add t keyword token
+              ) [
     "let", (fun x -> LET x);
     "val", (fun x -> VAL x);
     "in", (fun x -> IN x);
@@ -108,12 +108,12 @@ let long_ident =
 
 rule token = parse
   | newline { let pos = lexbuf.lex_curr_p in
-		lexbuf.lex_curr_p <-
-		{ pos with
-		    pos_lnum = pos.pos_lnum + 1;
-		    pos_bol  = pos.pos_cnum;
-		};
-		token lexbuf }
+                lexbuf.lex_curr_p <-
+                { pos with
+                    pos_lnum = pos.pos_lnum + 1;
+                    pos_bol  = pos.pos_cnum;
+                };
+                token lexbuf }
   | blank +
             { token lexbuf }
   | "_"     { WILD (cpos lexbuf) }
@@ -129,28 +129,28 @@ rule token = parse
   | "(*"
             { comment_level := 0; comment lexbuf; token lexbuf }
 
-  | ","	    { COMMA (cpos lexbuf) }
+  | ","            { COMMA (cpos lexbuf) }
   | "."     { DOT (cpos lexbuf)  }
   | "("     { LPAREN (cpos lexbuf)  }
   | ")"     { RPAREN (cpos lexbuf)  }
-  | "{"	    { LBRACE (cpos lexbuf)  }
+  | "{"            { LBRACE (cpos lexbuf)  }
   | "}"     { RBRACE (cpos lexbuf)  }
-  | "["	    { LBRACKET (cpos lexbuf)  }
+  | "["            { LBRACKET (cpos lexbuf)  }
   | "]"     { RBRACKET (cpos lexbuf)  }
   | "<-"    { LEFTARROW (cpos lexbuf)  }
-  | "<"	    { LANGLE (cpos lexbuf)  }
+  | "<"            { LANGLE (cpos lexbuf)  }
   | ">"     { RANGLE (cpos lexbuf)  }
   | "->"    { ARROW (cpos lexbuf)  }
   | "=>"    { DARROW (cpos lexbuf)  }
   | "="     { EQUAL (cpos lexbuf)  }
-  | ";"	    { SEMI (cpos lexbuf) }
+  | ";"            { SEMI (cpos lexbuf) }
   | "<:"     { COERCE (cpos lexbuf)  }
   | ":"     { COLON (cpos lexbuf)  }
   | "\\"    { BACKSLASH (cpos lexbuf)  }
   | "!"     { BANG (cpos lexbuf)  }
   | "/"     { SLASH (cpos lexbuf)  }
   | "|"     { BAR (cpos lexbuf)  }
-  | "&"	    { ANDC (cpos lexbuf) }
+  | "&"            { ANDC (cpos lexbuf) }
   | "*"     { STAR (cpos lexbuf)  }
   | ":="    { ASSIGN (cpos lexbuf) }
 
@@ -177,11 +177,11 @@ and comment = parse
             { fail lexbuf "Unterminated comment" }
 
   | newline { let pos = lexbuf.lex_curr_p in
-		lexbuf.lex_curr_p <-
-		{ pos with
-		    pos_lnum = pos.pos_lnum + 1;
-		    pos_bol  = pos.pos_cnum;
-		};
-		comment lexbuf }
+                lexbuf.lex_curr_p <-
+                { pos with
+                    pos_lnum = pos.pos_lnum + 1;
+                    pos_bol  = pos.pos_cnum;
+                };
+                comment lexbuf }
   | _
             { comment lexbuf }

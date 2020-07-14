@@ -25,14 +25,14 @@
     pretty-print in LaTeX, raw text or module Format mode. *)
 
 type formatter_output = {
-  out		: string -> int -> int -> unit;
-  flush		: unit -> unit;
-  newline	: unit -> unit;
-  spaces	: int -> unit;
-  with_tags	: bool;
-  open_tag	: Format.tag -> unit;
-  close_tag	: Format.tag -> unit;
-  margin	: int;
+  out                : string -> int -> int -> unit;
+  flush                : unit -> unit;
+  newline        : unit -> unit;
+  spaces        : int -> unit;
+  with_tags        : bool;
+  open_tag        : Format.tag -> unit;
+  close_tag        : Format.tag -> unit;
+  margin        : int;
 }
 
 type output =

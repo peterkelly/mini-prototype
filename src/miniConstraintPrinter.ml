@@ -42,7 +42,7 @@ let register_tasks () =
   Processing.register
     print_constraint_task ([], ignore)
     [ [ MiniInfer.generate_constraint_task;
-	MiniSyntacticAnalysis.parse_constraint_task
+        MiniSyntacticAnalysis.parse_constraint_task
       ] ]
     print_constraint
     (Misc.const true)

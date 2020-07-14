@@ -42,8 +42,8 @@ let rec extract_type = function
 
   | ELambda (pos, PTypeConstraint (pos', p, typ1), e2) ->
       let typ2, e2 = extract_type e2 in
-	TypApp (pos', TypVar (pos', TName "->"), [typ1; typ2]),
-	ELambda (pos, p, e2)
+        TypApp (pos', TypVar (pos', TName "->"), [typ1; typ2]),
+        ELambda (pos, p, e2)
 
   | _ ->
       raise Not_found
@@ -59,14 +59,14 @@ type recursive_value_definition_kind =
 let rec explicit_or_implicit p e =
   match p with
     | PTypeConstraint (pos, p, typ) ->
-	explicit_or_implicit p (ETypeConstraint (pos, e, typ))
+        explicit_or_implicit p (ETypeConstraint (pos, e, typ))
 
     | PVar (_, name) -> (
-	try
-	  let typ, e = extract_type e in
-	    Explicit (name, typ, e)
-	with Not_found ->
-	  Implicit (name, e)
+        try
+          let typ, e = extract_type e in
+            Explicit (name, typ, e)
+        with Not_found ->
+          Implicit (name, e)
       )
 
     | _ -> NotPVar
@@ -76,16 +76,16 @@ let rec explicit_or_implicit p e =
 let variables_of_typ =
   let rec vtyp acu = function
     | TypVar (_, TName x) ->
-	StringSet.add x acu
+        StringSet.add x acu
 
     | TypApp (_, t, ts) ->
-	List.fold_left vtyp (vtyp acu t) ts
+        List.fold_left vtyp (vtyp acu t) ts
 
     | TypRowCons (_, attributes, t) ->
-	List.fold_left vtyp (vtyp acu t) (assoc_proj2 attributes)
+        List.fold_left vtyp (vtyp acu t) (assoc_proj2 attributes)
 
     | TypRowUniform (_, x) ->
-	vtyp acu x
+        vtyp acu x
   in
     vtyp StringSet.empty
 
@@ -95,10 +95,10 @@ let arrow tenv =
 let rec type_of_args t =
   let rec chop acu = function
     | TypApp (_, TypVar (_, TName "->"), [ t1; t2 ]) ->
-	chop (t1 :: acu) t2
+        chop (t1 :: acu) t2
 
     | t ->
-	acu
+        acu
   in List.rev (chop [] t)
 
 let arity t =
@@ -111,20 +111,20 @@ let rec intern' pos tenv ty : crterm =
   match ty with
 
     | TypVar (pos, name) ->
-	as_fun tenv name
+        as_fun tenv name
 
     | TypApp (pos, t, typs) ->
-	let iargs = List.map (intern' pos tenv) typs in
-	  app (intern' pos tenv t) iargs
+        let iargs = List.map (intern' pos tenv) typs in
+          app (intern' pos tenv t) iargs
 
     | TypRowCons (pos, attributes, t) ->
-	let typed_labels =
-	  List.map (fun (l, t) -> l, intern' pos tenv t) attributes
-	in
-	  n_rowcons typed_labels (intern' pos tenv t)
+        let typed_labels =
+          List.map (fun (l, t) -> l, intern' pos tenv t) attributes
+        in
+          n_rowcons typed_labels (intern' pos tenv t)
 
     | TypRowUniform (pos, t) ->
-	uniform (intern' pos tenv t)
+        uniform (intern' pos tenv t)
 
 (** [intern tenv typ] converts the type expression [typ] to a type.
     The environment [tenv] maps type identifiers to types. *)
@@ -143,6 +143,6 @@ let intern_let_env pos tenv rs fs =
 let intern_scheme pos tenv name qs typ =
   let fqs, rtenv = fresh_flexible_vars pos tenv qs in
     Scheme (pos, [], fqs, CTrue pos,
-	    StringMap.singleton name
-	      ((intern pos (add_type_variables rtenv tenv) typ),
-	       pos))
+            StringMap.singleton name
+              ((intern pos (add_type_variables rtenv tenv) typ),
+               pos))
