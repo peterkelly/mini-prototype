@@ -35,7 +35,7 @@ GOOD_EXPECTED=$(GOOD_INPUTS:.good-input=.expected)
 all:
 
 clean-expected:
-	@ rm --force *.expected
+	@ rm -f *.expected
 
 expected: clean-expected $(GOOD_EXPECTED)
 
@@ -74,10 +74,10 @@ expected: clean-expected $(GOOD_EXPECTED)
 	fi
 
 clean-bad-counters:
-	@ rm --force bad-ok-counter bad-counter
+	@ rm -f bad-ok-counter bad-counter
 
 clean-good-counters:
-	@ rm --force good-counter good-ok-counter
+	@ rm -f good-counter good-ok-counter
 
 bad: clean-bad-counters $(BAD_OUTPUTS)
 	@ touch bad-ok-counter
@@ -98,7 +98,7 @@ announce:
 check: announce clean-silent good bad
 
 clean:
-	$(RM) --force *.good-output *.bad-output *counter *~
+	$(RM) -f *.good-output *.bad-output *counter *~
 
 clean-silent:
-	@ $(RM) --force *.good-output *.bad-output *counter *~
+	@ $(RM) -f *.good-output *.bad-output *counter *~

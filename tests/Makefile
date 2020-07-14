@@ -54,7 +54,7 @@ clean:
 	@ for i in bad/* good/*; do					    \
 	  $(MAKE) --silent -C $$i clean 2> /dev/null || true;    	    \
 	done;
-	@ rm --force *counter *~
+	@ rm -f *counter *~
 
 expected:
 	@ for i in bad/* good/*; do					    \
